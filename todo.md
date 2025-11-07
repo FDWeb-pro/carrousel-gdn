@@ -44,3 +44,13 @@
 - [ ] Créer une table de configuration pour les paramètres SMTP
 - [ ] Créer une page d'administration pour gérer les paramètres SMTP
 - [ ] Permettre aux admins de configurer SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM, SMTP_SECURE
+
+
+## Nouvelles Fonctionnalités - Validation et CRUD
+- [x] Ajouter un champ "status" (pending/approved/rejected) dans la table users
+- [x] Modifier l'inscription pour mettre les nouveaux utilisateurs en "pending" par défaut
+- [x] Créer l'interface de validation des demandes d'accès dans le panneau admin
+- [x] Ajouter CRUD complet pour les carrousels (édition, suppression) pour les admins
+- [x] Ajouter CRUD complet pour les types de slides (création, suppression)
+- [x] Bloquer l'accès à l'application pour les utilisateurs en statut "pending"
+- [x] Ajouter des notifications pour les demandes en attente

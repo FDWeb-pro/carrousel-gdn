@@ -1,6 +1,7 @@
 import DashboardLayout from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -13,7 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Plus, Save, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -40,6 +41,28 @@ export default function AdminSlideTypes() {
 
   const [editingType, setEditingType] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({ label: "", charLimit: 0 });
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [createForm, setCreateForm] = useState({ typeKey: "", label: "", charLimit: 0 });
+  const createMutation = trpc.slideTypes.create.useMutation({
+    onSuccess: () => {
+      toast.success("Type de slide créé avec succès");
+      utils.slideTypes.list.invalidate();
+      setIsCreateDialogOpen(false);
+      setCreateForm({ typeKey: "", label: "", charLimit: 0 });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erreur lors de la création");
+    },
+  });
+  const deleteMutation = trpc.slideTypes.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Type de slide supprimé avec succès");
+      utils.slideTypes.list.invalidate();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erreur lors de la suppression");
+    },
+  });
 
   const handleEdit = (slideType: any) => {
     setEditingType(slideType.typeKey);
@@ -76,11 +99,67 @@ export default function AdminSlideTypes() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Configuration des Types de Slides</h1>
-          <p className="text-muted-foreground mt-2">
-            Gérez les types de slides disponibles pour les utilisateurs
-          </p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold">Configuration des Types de Slides</h1>
+            <p className="text-muted-foreground mt-2">
+              Gérez les types de slides disponibles pour les utilisateurs
+            </p>
+          </div>
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Nouveau type
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Créer un nouveau type de slide</DialogTitle>
+                <DialogDescription>
+                  Définissez les paramètres du nouveau type de slide
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label>Clé du type (ex: type6)</Label>
+                  <Input
+                    value={createForm.typeKey}
+                    onChange={(e) => setCreateForm({ ...createForm, typeKey: e.target.value })}
+                    placeholder="type6"
+                  />
+                </div>
+                <div>
+                  <Label>Label</Label>
+                  <Input
+                    value={createForm.label}
+                    onChange={(e) => setCreateForm({ ...createForm, label: e.target.value })}
+                    placeholder="Type 6 - Description (max X car.)"
+                  />
+                </div>
+                <div>
+                  <Label>Limite de caractères</Label>
+                  <Input
+                    type="number"
+                    value={createForm.charLimit}
+                    onChange={(e) => setCreateForm({ ...createForm, charLimit: parseInt(e.target.value) })}
+                    placeholder="100"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button
+                  onClick={() => createMutation.mutate(createForm)}
+                  disabled={createMutation.isPending || !createForm.typeKey || !createForm.label}
+                >
+                  {createMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  ) : null}
+                  Créer
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <Card>
@@ -165,13 +244,27 @@ export default function AdminSlideTypes() {
                           </Button>
                         </div>
                       ) : (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleEdit(type)}
-                        >
-                          Modifier
-                        </Button>
+                        <div className="flex gap-2 justify-end">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEdit(type)}
+                          >
+                            Modifier
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              if (confirm(`Êtes-vous sûr de vouloir supprimer le type "${type.typeKey}" ?`)) {
+                                deleteMutation.mutate({ typeKey: type.typeKey });
+                              }
+                            }}
+                            disabled={deleteMutation.isPending}
+                          >
+                            <Trash2 className="w-4 h-4 text-destructive" />
+                          </Button>
+                        </div>
                       )}
                     </TableCell>
                   </TableRow>

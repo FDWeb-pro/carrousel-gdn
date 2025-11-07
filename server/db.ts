@@ -58,6 +58,8 @@ export async function upsertUser(user: InsertUser): Promise<void> {
     } else if (user.openId === ENV.ownerOpenId) {
       values.role = 'super_admin';
       updateSet.role = 'super_admin';
+      values.status = 'approved';
+      updateSet.status = 'approved';
     }
 
     if (!values.lastSignedIn) {
@@ -100,6 +102,30 @@ export async function updateUserRole(userId: number, role: 'membre' | 'admin' | 
   const db = await getDb();
   if (!db) throw new Error('Database not available');
   await db.update(users).set({ role }).where(eq(users.id, userId));
+}
+
+export async function updateUserStatus(userId: number, status: 'pending' | 'approved' | 'rejected') {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  await db.update(users).set({ status }).where(eq(users.id, userId));
+}
+
+export async function approveUser(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  await db.update(users).set({ status: 'approved' }).where(eq(users.id, userId));
+}
+
+export async function rejectUser(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  await db.update(users).set({ status: 'rejected' }).where(eq(users.id, userId));
+}
+
+export async function getPendingUsers() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(users).where(eq(users.status, 'pending')).orderBy(desc(users.createdAt));
 }
 
 export async function deleteUser(userId: number) {

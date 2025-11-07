@@ -17,6 +17,22 @@ const requireUser = t.middleware(async opts => {
     throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
   }
 
+  // Block pending users
+  if (ctx.user.status === 'pending') {
+    throw new TRPCError({ 
+      code: "FORBIDDEN", 
+      message: "Votre compte est en attente de validation par un administrateur." 
+    });
+  }
+  
+  // Block rejected users
+  if (ctx.user.status === 'rejected') {
+    throw new TRPCError({ 
+      code: "FORBIDDEN", 
+      message: "Votre demande d'accès a été refusée. Veuillez contacter un administrateur." 
+    });
+  }
+
   return next({
     ctx: {
       ...ctx,

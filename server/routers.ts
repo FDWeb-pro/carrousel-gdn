@@ -6,6 +6,8 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import * as db from "./db";
 import { generateExcelBuffer, sendEmail } from "./email";
+import { carrousels } from "../drizzle/schema";
+import { eq } from "drizzle-orm";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -64,6 +66,39 @@ export const appRouter = router({
       await db.deleteUser(input.userId);
       return { success: true };
     }),
+
+    approve: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).input(z.object({
+      userId: z.number(),
+    })).mutation(async ({ input }) => {
+      await db.approveUser(input.userId);
+      return { success: true };
+    }),
+
+    reject: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).input(z.object({
+      userId: z.number(),
+    })).mutation(async ({ input }) => {
+      await db.rejectUser(input.userId);
+      return { success: true };
+    }),
+
+    pending: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).query(async () => {
+      return db.getPendingUsers();
+    }),
   }),
 
   // Carrousel routes
@@ -117,6 +152,32 @@ export const appRouter = router({
       await db.deleteCarrousel(input.id);
       return { success: true };
     }),
+
+    update: protectedProcedure.input(z.object({
+      id: z.number(),
+      titre: z.string().optional(),
+      thematique: z.string().optional(),
+      emailDestination: z.string().email().optional(),
+      slides: z.string().optional(),
+    })).mutation(async ({ input, ctx }) => {
+      const carrousel = await db.getCarrouselById(input.id);
+      if (!carrousel) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Carrousel non trouvé' });
+      }
+      // Check permissions
+      if (carrousel.userId !== ctx.user.id && ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Accès non autorisé' });
+      }
+      const db_instance = await db.getDb();
+      if (!db_instance) throw new Error('Database not available');
+      await db_instance.update(carrousels).set({
+        titre: input.titre,
+        thematique: input.thematique,
+        emailDestination: input.emailDestination,
+        slides: input.slides,
+      }).where(eq(carrousels.id, input.id));
+      return { success: true };
+    }),
   }),
 
   // Slide types configuration (admin only)
@@ -150,6 +211,40 @@ export const appRouter = router({
       enabled: z.number(),
     })).mutation(async ({ input }) => {
       await db.toggleSlideTypeConfig(input.typeKey, input.enabled);
+      return { success: true };
+    }),
+
+    create: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).input(z.object({
+      typeKey: z.string(),
+      label: z.string(),
+      charLimit: z.number(),
+    })).mutation(async ({ input }) => {
+      await db.upsertSlideTypeConfig({
+        typeKey: input.typeKey,
+        label: input.label,
+        charLimit: input.charLimit,
+        enabled: 1,
+      });
+      return { success: true };
+    }),
+
+    delete: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).input(z.object({
+      typeKey: z.string(),
+    })).mutation(async ({ input }) => {
+      const db_instance = await db.getDb();
+      if (!db_instance) throw new Error('Database not available');
+      const { slideTypesConfig } = await import('../drizzle/schema');
+      await db_instance.delete(slideTypesConfig).where(eq(slideTypesConfig.typeKey, input.typeKey));
       return { success: true };
     }),
   }),

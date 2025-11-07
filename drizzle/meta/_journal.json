@@ -15,6 +15,13 @@
       "when": 1762521163697,
       "tag": "0001_low_iron_fist",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1762523814162,
+      "tag": "0002_majestic_timeslip",
+      "breakpoints": true
     }
   ]
 }

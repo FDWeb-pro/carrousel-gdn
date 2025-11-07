@@ -2,6 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -18,7 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Shield, Trash2, User } from "lucide-react";
+import { CheckCircle, Loader2, Shield, Trash2, User, XCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -26,6 +27,7 @@ export default function AdminUsers() {
   const { user } = useAuth();
   const utils = trpc.useUtils();
   const { data: users, isLoading } = trpc.users.list.useQuery();
+  const { data: pendingUsers } = trpc.users.pending.useQuery();
   const updateRoleMutation = trpc.users.updateRole.useMutation({
     onSuccess: () => {
       toast.success("Rôle mis à jour avec succès");
@@ -39,9 +41,30 @@ export default function AdminUsers() {
     onSuccess: () => {
       toast.success("Utilisateur supprimé avec succès");
       utils.users.list.invalidate();
+      utils.users.pending.invalidate();
     },
     onError: (error) => {
       toast.error(error.message || "Erreur lors de la suppression");
+    },
+  });
+  const approveMutation = trpc.users.approve.useMutation({
+    onSuccess: () => {
+      toast.success("Utilisateur approuvé avec succès");
+      utils.users.list.invalidate();
+      utils.users.pending.invalidate();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erreur lors de l'approbation");
+    },
+  });
+  const rejectMutation = trpc.users.reject.useMutation({
+    onSuccess: () => {
+      toast.success("Utilisateur rejeté avec succès");
+      utils.users.list.invalidate();
+      utils.users.pending.invalidate();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erreur lors du rejet");
     },
   });
 
@@ -57,6 +80,34 @@ export default function AdminUsers() {
     if (confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")) {
       await deleteUserMutation.mutateAsync({ userId });
     }
+  };
+
+  const handleApprove = async (userId: number) => {
+    await approveMutation.mutateAsync({ userId });
+  };
+
+  const handleReject = async (userId: number) => {
+    if (confirm("Êtes-vous sûr de vouloir rejeter cette demande ?")) {
+      await rejectMutation.mutateAsync({ userId });
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    const styles = {
+      pending: "bg-yellow-100 text-yellow-800 border-yellow-300",
+      approved: "bg-green-100 text-green-800 border-green-300",
+      rejected: "bg-red-100 text-red-800 border-red-300",
+    };
+    const labels = {
+      pending: "En attente",
+      approved: "Approuvé",
+      rejected: "Rejeté",
+    };
+    return (
+      <Badge variant="outline" className={styles[status as keyof typeof styles] || styles.pending}>
+        {labels[status as keyof typeof labels] || status}
+      </Badge>
+    );
   };
 
   const getRoleBadge = (role: string) => {
@@ -100,6 +151,64 @@ export default function AdminUsers() {
           </p>
         </div>
 
+        {pendingUsers && pendingUsers.length > 0 && (
+          <Card className="border-yellow-300 bg-yellow-50">
+            <CardHeader>
+              <CardTitle className="text-yellow-900">Demandes en attente</CardTitle>
+              <CardDescription>
+                {pendingUsers.length} demande(s) d'accès en attente de validation
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Nom</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Date de demande</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {pendingUsers.map((u) => (
+                    <TableRow key={u.id}>
+                      <TableCell className="font-medium">{u.name || "—"}</TableCell>
+                      <TableCell>{u.email || "—"}</TableCell>
+                      <TableCell>
+                        {new Date(u.createdAt).toLocaleDateString("fr-FR")}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex gap-2 justify-end">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleApprove(u.id)}
+                            disabled={approveMutation.isPending}
+                            className="text-green-600 border-green-300 hover:bg-green-50"
+                          >
+                            <CheckCircle className="w-4 h-4 mr-1" />
+                            Approuver
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleReject(u.id)}
+                            disabled={rejectMutation.isPending}
+                            className="text-red-600 border-red-300 hover:bg-red-50"
+                          >
+                            <XCircle className="w-4 h-4 mr-1" />
+                            Rejeter
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+
         <Card>
           <CardHeader>
             <CardTitle>Utilisateurs</CardTitle>
@@ -115,6 +224,7 @@ export default function AdminUsers() {
                   <TableHead>Email</TableHead>
                   <TableHead>Méthode de connexion</TableHead>
                   <TableHead>Rôle</TableHead>
+                  <TableHead>Statut</TableHead>
                   <TableHead>Dernière connexion</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -148,6 +258,9 @@ export default function AdminUsers() {
                           </SelectContent>
                         </Select>
                       )}
+                    </TableCell>
+                    <TableCell>
+                      {getStatusBadge(u.status)}
                     </TableCell>
                     <TableCell>
                       {u.lastSignedIn ? new Date(u.lastSignedIn).toLocaleDateString("fr-FR") : "—"}
