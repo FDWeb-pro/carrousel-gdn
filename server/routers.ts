@@ -43,10 +43,22 @@ export const appRouter = router({
       userId: z.number(),
       role: z.enum(['membre', 'admin', 'super_admin']),
     })).mutation(async ({ input, ctx }) => {
+      // Get the target user
+      const targetUser = await db.getUserById(input.userId);
+      if (!targetUser) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Utilisateur non trouvé' });
+      }
+
+      // Admins cannot modify super_admin roles
+      if (ctx.user.role === 'admin' && targetUser.role === 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Les administrateurs ne peuvent pas modifier le rôle des super administrateurs' });
+      }
+
       // Only super_admin can create other super_admins
       if (input.role === 'super_admin' && ctx.user.role !== 'super_admin') {
-        throw new TRPCError({ code: 'FORBIDDEN', message: 'Seul un super admin peut créer d\'autres super admins' });
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Seuls les super administrateurs peuvent promouvoir des utilisateurs en super administrateur' });
       }
+
       await db.updateUserRole(input.userId, input.role);
       return { success: true };
     }),
@@ -59,10 +71,22 @@ export const appRouter = router({
     }).input(z.object({
       userId: z.number(),
     })).mutation(async ({ input, ctx }) => {
+      // Get the target user
+      const targetUser = await db.getUserById(input.userId);
+      if (!targetUser) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Utilisateur non trouvé' });
+      }
+
+      // Admins cannot delete super_admin
+      if (ctx.user.role === 'admin' && targetUser.role === 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Les administrateurs ne peuvent pas supprimer des super administrateurs' });
+      }
+
       // Cannot delete yourself
       if (input.userId === ctx.user.id) {
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'Vous ne pouvez pas supprimer votre propre compte' });
       }
+
       await db.deleteUser(input.userId);
       return { success: true };
     }),
@@ -331,11 +355,11 @@ export const appRouter = router({
     }),
   }),
 
-  // SMTP Configuration (admin only)
+  // SMTP Configuration (super_admin only)
   smtp: router({
     get: protectedProcedure.use(({ ctx, next }) => {
-      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
-        throw new TRPCError({ code: 'FORBIDDEN' });
+      if (ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Seuls les super administrateurs peuvent accéder à la configuration SMTP' });
       }
       return next({ ctx });
     }).query(async () => {
@@ -343,8 +367,8 @@ export const appRouter = router({
     }),
 
     update: protectedProcedure.use(({ ctx, next }) => {
-      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
-        throw new TRPCError({ code: 'FORBIDDEN' });
+      if (ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Seuls les super administrateurs peuvent modifier la configuration SMTP' });
       }
       return next({ ctx });
     }).input(z.object({

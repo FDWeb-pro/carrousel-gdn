@@ -34,7 +34,7 @@ const menuItems = [
   { icon: History, label: "Historique", path: "/history", roles: ['membre', 'admin', 'super_admin'] },
   { icon: Users, label: "Utilisateurs", path: "/admin/users", roles: ['admin', 'super_admin'] },
   { icon: Settings, label: "Types de Slides", path: "/admin/slide-types", roles: ['admin', 'super_admin'] },
-  { icon: Mail, label: "Configuration SMTP", path: "/admin/smtp", roles: ['admin', 'super_admin'] },
+  { icon: Mail, label: "Configuration SMTP", path: "/admin/smtp", roles: ['super_admin'] },
   { icon: Shield, label: "Historique d'audit", path: "/admin/audit", roles: ['admin', 'super_admin'] },
 ];
 

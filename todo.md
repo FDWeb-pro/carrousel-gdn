@@ -71,3 +71,9 @@
 - [x] Corriger le statut par défaut des nouveaux utilisateurs (doit être "pending")
 - [x] Créer une page d'attente pour les utilisateurs pending au lieu d'une erreur 403
 - [x] Créer des notifications pour les admins lors de nouvelles inscriptions
+
+
+## Restrictions de permissions
+- [x] Restreindre l'accès SMTP uniquement aux super_admin
+- [x] Empêcher les admins de modifier le rôle des super_admin
+- [x] Empêcher les admins de supprimer des super_admin

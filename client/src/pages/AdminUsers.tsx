@@ -271,7 +271,7 @@ export default function AdminUsers() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDeleteUser(u.id)}
-                          disabled={deleteUserMutation.isPending}
+                          disabled={deleteUserMutation.isPending || (user?.role === 'admin' && u.role === 'super_admin')}
                         >
                           <Trash2 className="w-4 h-4 text-destructive" />
                         </Button>
