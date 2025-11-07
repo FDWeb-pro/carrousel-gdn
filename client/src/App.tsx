@@ -9,6 +9,8 @@ import Generator from "./pages/Generator";
 import History from "./pages/History";
 import AdminUsers from "./pages/AdminUsers";
 import AdminSlideTypes from "./pages/AdminSlideTypes";
+import AdminSmtp from "./pages/AdminSmtp";
+import AdminAudit from "./pages/AdminAudit";
 import { useAuth } from "./_core/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 import { getLoginUrl } from "./const";
@@ -43,6 +45,8 @@ function Router() {
       <Route path="/history" component={() => <ProtectedRoute component={History} />} />
       <Route path="/admin/users" component={() => <ProtectedRoute component={AdminUsers} adminOnly />} />
       <Route path="/admin/slide-types" component={() => <ProtectedRoute component={AdminSlideTypes} adminOnly />} />
+      <Route path="/admin/smtp" component={() => <ProtectedRoute component={AdminSmtp} adminOnly />} />
+      <Route path="/admin/audit" component={() => <ProtectedRoute component={AdminAudit} adminOnly />} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

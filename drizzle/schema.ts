@@ -58,3 +58,54 @@ export const slideTypesConfig = mysqlTable("slideTypesConfig", {
 
 export type SlideTypeConfig = typeof slideTypesConfig.$inferSelect;
 export type InsertSlideTypeConfig = typeof slideTypesConfig.$inferInsert;
+
+/**
+ * Configuration SMTP pour l'envoi d'emails
+ */
+export const smtpConfig = mysqlTable("smtpConfig", {
+  id: int("id").autoincrement().primaryKey(),
+  host: varchar("host", { length: 255 }),
+  port: int("port").default(587),
+  secure: int("secure").default(0), // 0 = false, 1 = true
+  user: varchar("user", { length: 255 }),
+  pass: text("pass"),
+  from: varchar("from", { length: 255 }),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SmtpConfig = typeof smtpConfig.$inferSelect;
+export type InsertSmtpConfig = typeof smtpConfig.$inferInsert;
+
+/**
+ * Notifications pour les administrateurs
+ */
+export const notifications = mysqlTable("notifications", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(), // Admin qui doit voir la notification
+  type: varchar("type", { length: 50 }).notNull(), // 'user_pending', 'user_approved', etc.
+  title: varchar("title", { length: 255 }).notNull(),
+  message: text("message"),
+  relatedUserId: int("relatedUserId"), // ID de l'utilisateur concerné
+  isRead: int("isRead").default(0).notNull(), // 0 = non lu, 1 = lu
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = typeof notifications.$inferInsert;
+
+/**
+ * Historique d'audit des actions importantes
+ */
+export const auditLog = mysqlTable("auditLog", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(), // Utilisateur qui a effectué l'action
+  userName: varchar("userName", { length: 255 }), // Nom de l'utilisateur (pour historique)
+  action: varchar("action", { length: 100 }).notNull(), // 'create_carrousel', 'delete_user', etc.
+  entityType: varchar("entityType", { length: 50 }).notNull(), // 'carrousel', 'user', 'slideType', etc.
+  entityId: int("entityId"), // ID de l'entité concernée
+  details: text("details"), // JSON avec les détails de l'action
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type AuditLog = typeof auditLog.$inferSelect;
+export type InsertAuditLog = typeof auditLog.$inferInsert;

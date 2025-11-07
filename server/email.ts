@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import * as XLSX from "xlsx";
+import * as db from "./db";
 
 interface EmailOptions {
   to: string;
@@ -16,24 +17,44 @@ interface EmailOptions {
  */
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
   try {
-    // Check if SMTP is configured
-    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    // Try to get SMTP config from database first
+    const smtpConfig = await db.getSmtpConfig();
+    
+    let host, port, secure, user, pass, from;
+    
+    if (smtpConfig && smtpConfig.host && smtpConfig.user && smtpConfig.pass) {
+      // Use database config
+      host = smtpConfig.host;
+      port = smtpConfig.port || 587;
+      secure = smtpConfig.secure === 1;
+      user = smtpConfig.user;
+      pass = smtpConfig.pass;
+      from = smtpConfig.from || smtpConfig.user;
+    } else if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+      // Fallback to environment variables
+      host = process.env.SMTP_HOST;
+      port = parseInt(process.env.SMTP_PORT || "587");
+      secure = process.env.SMTP_SECURE === "true";
+      user = process.env.SMTP_USER;
+      pass = process.env.SMTP_PASS;
+      from = process.env.SMTP_FROM || process.env.SMTP_USER;
+    } else {
       console.warn("[Email] SMTP not configured. Email not sent.");
       return false;
     }
 
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || "587"),
-      secure: process.env.SMTP_SECURE === "true",
+      host,
+      port,
+      secure,
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user,
+        pass,
       },
     });
 
     const mailOptions: any = {
-      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+      from,
       to: options.to,
       subject: options.subject,
       text: options.text,

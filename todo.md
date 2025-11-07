@@ -54,3 +54,14 @@
 - [x] Ajouter CRUD complet pour les types de slides (création, suppression)
 - [x] Bloquer l'accès à l'application pour les utilisateurs en statut "pending"
 - [x] Ajouter des notifications pour les demandes en attente
+
+
+## Fonctionnalités Avancées
+- [x] Créer une table de configuration pour les paramètres SMTP
+- [x] Créer une page admin pour gérer la configuration SMTP
+- [x] Créer une table pour les notifications
+- [x] Implémenter le système de notifications pour les demandes d'accès
+- [x] Ajouter un badge de compteur dans le menu pour les notifications
+- [x] Créer une table d'audit pour l'historique des actions
+- [x] Implémenter le logging des actions importantes
+- [x] Créer une page admin pour consulter l'historique d'audit

@@ -74,8 +74,23 @@ export const appRouter = router({
       return next({ ctx });
     }).input(z.object({
       userId: z.number(),
-    })).mutation(async ({ input }) => {
+    })).mutation(async ({ input, ctx }) => {
+      const approvedUser = await db.getUserById(input.userId);
       await db.approveUser(input.userId);
+      
+      // Create audit log
+      await db.createAuditLog({
+        userId: ctx.user.id,
+        userName: ctx.user.name || ctx.user.email || 'Unknown',
+        action: 'approve_user',
+        entityType: 'user',
+        entityId: input.userId,
+        details: JSON.stringify({ 
+          approvedUserName: approvedUser?.name || approvedUser?.email || 'Unknown',
+          approvedUserEmail: approvedUser?.email 
+        }),
+      });
+      
       return { success: true };
     }),
 
@@ -86,8 +101,23 @@ export const appRouter = router({
       return next({ ctx });
     }).input(z.object({
       userId: z.number(),
-    })).mutation(async ({ input }) => {
+    })).mutation(async ({ input, ctx }) => {
+      const rejectedUser = await db.getUserById(input.userId);
       await db.rejectUser(input.userId);
+      
+      // Create audit log
+      await db.createAuditLog({
+        userId: ctx.user.id,
+        userName: ctx.user.name || ctx.user.email || 'Unknown',
+        action: 'reject_user',
+        entityType: 'user',
+        entityId: input.userId,
+        details: JSON.stringify({ 
+          rejectedUserName: rejectedUser?.name || rejectedUser?.email || 'Unknown',
+          rejectedUserEmail: rejectedUser?.email 
+        }),
+      });
+      
       return { success: true };
     }),
 
@@ -113,6 +143,20 @@ export const appRouter = router({
         ...input,
         userId: ctx.user.id,
       });
+      
+      // Create audit log
+      await db.createAuditLog({
+        userId: ctx.user.id,
+        userName: ctx.user.name || ctx.user.email || 'Unknown',
+        action: 'create_carrousel',
+        entityType: 'carrousel',
+        entityId: result[0].insertId,
+        details: JSON.stringify({ 
+          titre: input.titre,
+          thematique: input.thematique 
+        }),
+      });
+      
       return { success: true, id: result[0].insertId };
     }),
 
@@ -284,6 +328,87 @@ export const appRouter = router({
       }
 
       return { success: true };
+    }),
+  }),
+
+  // SMTP Configuration (admin only)
+  smtp: router({
+    get: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).query(async () => {
+      return db.getSmtpConfig();
+    }),
+
+    update: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).input(z.object({
+      host: z.string().optional(),
+      port: z.number().optional(),
+      secure: z.number().optional(),
+      user: z.string().optional(),
+      pass: z.string().optional(),
+      from: z.string().optional(),
+    })).mutation(async ({ input, ctx }) => {
+      await db.upsertSmtpConfig(input);
+      await db.createAuditLog({
+        userId: ctx.user.id,
+        userName: ctx.user.name || ctx.user.email || 'Unknown',
+        action: 'update_smtp_config',
+        entityType: 'smtp',
+        entityId: null,
+        details: JSON.stringify({ message: 'Configuration SMTP mise à jour' }),
+      });
+      return { success: true };
+    }),
+  }),
+
+  // Notifications
+  notifications: router({
+    list: protectedProcedure.query(async ({ ctx }) => {
+      return db.getNotificationsByUser(ctx.user.id);
+    }),
+
+    unreadCount: protectedProcedure.query(async ({ ctx }) => {
+      return db.getUnreadNotificationsCount(ctx.user.id);
+    }),
+
+    markAsRead: protectedProcedure.input(z.object({
+      notificationId: z.number(),
+    })).mutation(async ({ input }) => {
+      await db.markNotificationAsRead(input.notificationId);
+      return { success: true };
+    }),
+
+    markAllAsRead: protectedProcedure.mutation(async ({ ctx }) => {
+      await db.markAllNotificationsAsRead(ctx.user.id);
+      return { success: true };
+    }),
+
+    delete: protectedProcedure.input(z.object({
+      notificationId: z.number(),
+    })).mutation(async ({ input }) => {
+      await db.deleteNotification(input.notificationId);
+      return { success: true };
+    }),
+  }),
+
+  // Audit Log (admin only)
+  audit: router({
+    list: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).input(z.object({
+      limit: z.number().optional(),
+    })).query(async ({ input }) => {
+      return db.getAuditLogs(input.limit || 100);
     }),
   }),
 });

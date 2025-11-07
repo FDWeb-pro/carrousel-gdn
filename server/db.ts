@@ -1,6 +1,6 @@
-import { desc, eq } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { carrousels, InsertCarrousel, InsertSlideTypeConfig, InsertUser, slideTypesConfig, users } from "../drizzle/schema";
+import { carrousels, InsertCarrousel, InsertSlideTypeConfig, InsertUser, slideTypesConfig, users, smtpConfig, InsertSmtpConfig, notifications, InsertNotification, auditLog, InsertAuditLog } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -98,6 +98,13 @@ export async function getAllUsers() {
   return db.select().from(users).orderBy(desc(users.createdAt));
 }
 
+export async function getUserById(userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
 export async function updateUserRole(userId: number, role: 'membre' | 'admin' | 'super_admin') {
   const db = await getDb();
   if (!db) throw new Error('Database not available');
@@ -190,4 +197,90 @@ export async function toggleSlideTypeConfig(typeKey: string, enabled: number) {
   const db = await getDb();
   if (!db) throw new Error('Database not available');
   await db.update(slideTypesConfig).set({ enabled }).where(eq(slideTypesConfig.typeKey, typeKey));
+}
+
+// SMTP Configuration
+export async function getSmtpConfig() {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(smtpConfig).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function upsertSmtpConfig(config: Partial<InsertSmtpConfig>) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  const existing = await getSmtpConfig();
+  if (existing) {
+    await db.update(smtpConfig).set(config).where(eq(smtpConfig.id, existing.id));
+  } else {
+    await db.insert(smtpConfig).values(config as InsertSmtpConfig);
+  }
+}
+
+// Notifications
+export async function createNotification(notification: InsertNotification) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  await db.insert(notifications).values(notification);
+}
+
+export async function getNotificationsByUser(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(notifications).where(eq(notifications.userId, userId)).orderBy(desc(notifications.createdAt));
+}
+
+export async function getUnreadNotificationsCount(userId: number) {
+  const db = await getDb();
+  if (!db) return 0;
+  const result = await db.select().from(notifications).where(
+    and(eq(notifications.userId, userId), eq(notifications.isRead, 0))
+  );
+  return result.length;
+}
+
+export async function markNotificationAsRead(notificationId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  await db.update(notifications).set({ isRead: 1 }).where(eq(notifications.id, notificationId));
+}
+
+export async function markAllNotificationsAsRead(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  await db.update(notifications).set({ isRead: 1 }).where(eq(notifications.userId, userId));
+}
+
+export async function deleteNotification(notificationId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  await db.delete(notifications).where(eq(notifications.id, notificationId));
+}
+
+// Audit Log
+export async function createAuditLog(log: InsertAuditLog) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  await db.insert(auditLog).values(log);
+}
+
+export async function getAuditLogs(limit: number = 100) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(auditLog).orderBy(desc(auditLog.createdAt)).limit(limit);
+}
+
+export async function getAuditLogsByUser(userId: number, limit: number = 50) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(auditLog).where(eq(auditLog.userId, userId)).orderBy(desc(auditLog.createdAt)).limit(limit);
+}
+
+// Helper: Get all admins for notifications
+export async function getAllAdmins() {
+  const db = await getDb();
+  if (!db) return [];
+  const allUsers = await db.select().from(users).where(eq(users.status, 'approved'));
+  return allUsers.filter(u => u.role === 'admin' || u.role === 'super_admin');
 }

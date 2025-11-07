@@ -1,4 +1,6 @@
-import { useAuth } from "@/_core/hooks/useAuth";
+import { useAuth } from '@/_core/hooks/useAuth';
+import { trpc } from '@/lib/trpc';
+import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -21,7 +23,7 @@ import {
 } from "@/components/ui/sidebar";
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { FileText, History, LayoutDashboard, LogOut, PanelLeft, Settings, Shield, Users } from "lucide-react";
+import { FileText, History, LayoutDashboard, LogOut, Mail, PanelLeft, Settings, Shield, Users } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -32,6 +34,8 @@ const menuItems = [
   { icon: History, label: "Historique", path: "/history", roles: ['membre', 'admin', 'super_admin'] },
   { icon: Users, label: "Utilisateurs", path: "/admin/users", roles: ['admin', 'super_admin'] },
   { icon: Settings, label: "Types de Slides", path: "/admin/slide-types", roles: ['admin', 'super_admin'] },
+  { icon: Mail, label: "Configuration SMTP", path: "/admin/smtp", roles: ['admin', 'super_admin'] },
+  { icon: Shield, label: "Historique d'audit", path: "/admin/audit", roles: ['admin', 'super_admin'] },
 ];
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";
@@ -125,6 +129,10 @@ function DashboardLayoutContent({
   const sidebarRef = useRef<HTMLDivElement>(null);
   const activeMenuItem = menuItems.find(item => item.path === location);
   const isMobile = useIsMobile();
+  const { data: pendingUsers } = trpc.users.pending.useQuery(undefined, {
+    enabled: user?.role === 'admin' || user?.role === 'super_admin',
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
 
   useEffect(() => {
     if (isCollapsed) {
@@ -224,7 +232,12 @@ function DashboardLayoutContent({
                       <item.icon
                         className={`h-4 w-4 ${isActive ? "text-primary" : ""}`}
                       />
-                      <span>{item.label}</span>
+                      <span className="flex-1">{item.label}</span>
+                      {item.path === '/admin/users' && pendingUsers && pendingUsers.length > 0 && (
+                        <Badge variant="destructive" className="ml-auto h-5 px-1.5 text-xs">
+                          {pendingUsers.length}
+                        </Badge>
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
