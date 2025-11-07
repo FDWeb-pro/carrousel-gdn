@@ -11,6 +11,8 @@ import AdminUsers from "./pages/AdminUsers";
 import AdminSlideTypes from "./pages/AdminSlideTypes";
 import AdminSmtp from "./pages/AdminSmtp";
 import AdminAudit from "./pages/AdminAudit";
+import PendingApproval from "./pages/PendingApproval";
+import AccessDenied from "./pages/AccessDenied";
 import { useAuth } from "./_core/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 import { getLoginUrl } from "./const";
@@ -31,6 +33,15 @@ function ProtectedRoute({ component: Component, adminOnly = false }: { component
     return null;
   }
 
+  // Check user status
+  if (user.status === 'pending') {
+    return <Redirect to="/pending" />;
+  }
+
+  if (user.status === 'rejected') {
+    return <Redirect to="/access-denied" />;
+  }
+
   if (adminOnly && user.role !== 'admin' && user.role !== 'super_admin') {
     return <Redirect to="/" />;
   }
@@ -47,6 +58,8 @@ function Router() {
       <Route path="/admin/slide-types" component={() => <ProtectedRoute component={AdminSlideTypes} adminOnly />} />
       <Route path="/admin/smtp" component={() => <ProtectedRoute component={AdminSmtp} adminOnly />} />
       <Route path="/admin/audit" component={() => <ProtectedRoute component={AdminAudit} adminOnly />} />
+      <Route path="/pending" component={PendingApproval} />
+      <Route path="/access-denied" component={AccessDenied} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

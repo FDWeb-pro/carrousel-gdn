@@ -52,6 +52,10 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       values.lastSignedIn = user.lastSignedIn;
       updateSet.lastSignedIn = user.lastSignedIn;
     }
+    // Check if this is a new user (not an update)
+    const existingUser = await db.select().from(users).where(eq(users.openId, user.openId)).limit(1);
+    const isNewUser = existingUser.length === 0;
+
     if (user.role !== undefined) {
       values.role = user.role;
       updateSet.role = user.role;
@@ -60,6 +64,18 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       updateSet.role = 'super_admin';
       values.status = 'approved';
       updateSet.status = 'approved';
+    } else if (isNewUser) {
+      // New users start as 'membre' with 'pending' status
+      values.role = 'membre';
+      values.status = 'pending';
+    }
+
+    // Set status for new users if not already set
+    if (user.status !== undefined) {
+      values.status = user.status;
+      updateSet.status = user.status;
+    } else if (isNewUser && user.openId !== ENV.ownerOpenId) {
+      values.status = 'pending';
     }
 
     if (!values.lastSignedIn) {
@@ -73,6 +89,21 @@ export async function upsertUser(user: InsertUser): Promise<void> {
     await db.insert(users).values(values).onDuplicateKeyUpdate({
       set: updateSet,
     });
+
+    // If this is a new user with pending status, notify all admins
+    if (isNewUser && values.status === 'pending') {
+      const admins = await getAllAdmins();
+      for (const admin of admins) {
+        await createNotification({
+          userId: admin.id,
+          type: 'user_pending',
+          title: 'Nouvelle demande d\'accès',
+          message: `${values.name || values.email || 'Un utilisateur'} demande l'accès à l'application`,
+          relatedUserId: null, // We don't have the new user ID yet
+          isRead: 0,
+        });
+      }
+    }
   } catch (error) {
     console.error("[Database] Failed to upsert user:", error);
     throw error;

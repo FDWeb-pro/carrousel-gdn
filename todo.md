@@ -65,3 +65,9 @@
 - [x] Créer une table d'audit pour l'historique des actions
 - [x] Implémenter le logging des actions importantes
 - [x] Créer une page admin pour consulter l'historique d'audit
+
+
+## Corrections de bugs
+- [x] Corriger le statut par défaut des nouveaux utilisateurs (doit être "pending")
+- [x] Créer une page d'attente pour les utilisateurs pending au lieu d'une erreur 403
+- [x] Créer des notifications pour les admins lors de nouvelles inscriptions
