@@ -1,18 +1,49 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import { Route, Switch, Redirect } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
+import Generator from "./pages/Generator";
+import History from "./pages/History";
+import AdminUsers from "./pages/AdminUsers";
+import AdminSlideTypes from "./pages/AdminSlideTypes";
+import { useAuth } from "./_core/hooks/useAuth";
+import { Loader2 } from "lucide-react";
+import { getLoginUrl } from "./const";
+
+function ProtectedRoute({ component: Component, adminOnly = false }: { component: React.ComponentType; adminOnly?: boolean }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    window.location.href = getLoginUrl();
+    return null;
+  }
+
+  if (adminOnly && user.role !== 'admin' && user.role !== 'super_admin') {
+    return <Redirect to="/" />;
+  }
+
+  return <Component />;
+}
 
 function Router() {
-  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
+      <Route path="/" component={() => <ProtectedRoute component={Generator} />} />
+      <Route path="/history" component={() => <ProtectedRoute component={History} />} />
+      <Route path="/admin/users" component={() => <ProtectedRoute component={AdminUsers} adminOnly />} />
+      <Route path="/admin/slide-types" component={() => <ProtectedRoute component={AdminSlideTypes} adminOnly />} />
+      <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
   );
