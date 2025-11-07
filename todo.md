@@ -77,3 +77,10 @@
 - [x] Restreindre l'accès SMTP uniquement aux super_admin
 - [x] Empêcher les admins de modifier le rôle des super_admin
 - [x] Empêcher les admins de supprimer des super_admin
+
+
+## Modifications d'interface
+- [x] Retirer le champ "Email de destination" de la page générateur
+- [x] Ajouter un champ "Email de destination" dans les paramètres SMTP
+- [x] Ajouter un bouton "Envoyer et Télécharger" dans le générateur
+- [x] Implémenter la logique d'envoi automatique à l'adresse SMTP configurée

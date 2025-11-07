@@ -62,14 +62,16 @@ export type InsertSlideTypeConfig = typeof slideTypesConfig.$inferInsert;
 /**
  * Configuration SMTP pour l'envoi d'emails
  */
-export const smtpConfig = mysqlTable("smtpConfig", {
+export const smtpConfig = mysqlTable("smtp_config", {
   id: int("id").autoincrement().primaryKey(),
   host: varchar("host", { length: 255 }),
-  port: int("port").default(587),
-  secure: int("secure").default(0), // 0 = false, 1 = true
+  port: int("port"),
+  secure: int("secure").default(1),
   user: varchar("user", { length: 255 }),
-  pass: text("pass"),
+  pass: varchar("pass", { length: 255 }),
   from: varchar("from", { length: 255 }),
+  destinationEmail: varchar("destinationEmail", { length: 320 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 

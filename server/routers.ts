@@ -321,7 +321,7 @@ export const appRouter = router({
   email: router({
     sendCarrousel: protectedProcedure.input(z.object({
       carrouselId: z.number(),
-      emailTo: z.string().email(),
+      emailTo: z.string().email().optional(),
     })).mutation(async ({ input, ctx }) => {
       const carrousel = await db.getCarrouselById(input.carrouselId);
       if (!carrousel) {
@@ -332,11 +332,22 @@ export const appRouter = router({
         throw new TRPCError({ code: 'FORBIDDEN', message: 'Accès non autorisé' });
       }
 
+      // Get destination email from SMTP config
+      const smtpConfig = await db.getSmtpConfig();
+      const destinationEmail = input.emailTo || smtpConfig?.destinationEmail;
+      
+      if (!destinationEmail) {
+        throw new TRPCError({ 
+          code: 'BAD_REQUEST', 
+          message: 'Aucune adresse email de destination configurée. Veuillez configurer l\'adresse dans les paramètres SMTP.' 
+        });
+      }
+
       const slides = JSON.parse(carrousel.slides);
       const excelBuffer = generateExcelBuffer(slides);
 
       const emailSent = await sendEmail({
-        to: input.emailTo,
+        to: destinationEmail,
         subject: `Carrousel GdN - ${carrousel.titre}`,
         text: `Bonjour,\n\nVeuillez trouver ci-joint le fichier Excel du carrousel "${carrousel.titre}".\n\nThématique : ${carrousel.thematique}\n\nCordialement,\nGuichet du Numérique`,
         html: `<p>Bonjour,</p><p>Veuillez trouver ci-joint le fichier Excel du carrousel <strong>${carrousel.titre}</strong>.</p><p>Thématique : ${carrousel.thematique}</p><p>Cordialement,<br>Guichet du Numérique</p>`,
@@ -378,6 +389,7 @@ export const appRouter = router({
       user: z.string().optional(),
       pass: z.string().optional(),
       from: z.string().optional(),
+      destinationEmail: z.string().email().optional(),
     })).mutation(async ({ input, ctx }) => {
       await db.upsertSmtpConfig(input);
       await db.createAuditLog({

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Download, Loader2, Plus, Save, Trash2 } from "lucide-react";
+import { Download, Loader2, Mail, Plus, Save, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
@@ -55,7 +55,7 @@ export default function Generator() {
     { page: 1, type: "Titre", thematique: "", titre: "" },
     { page: 10, type: "Finale", expert: "", expertise: "", url: "" },
   ]);
-  const [emailDestination, setEmailDestination] = useState("");
+  const [carrouselId, setCarrouselId] = useState<number | null>(null);
 
   const enabledSlideTypes = slideTypesConfig?.filter((t) => t.enabled === 1) || [];
 
@@ -120,12 +120,15 @@ export default function Generator() {
       return;
     }
 
-    await createCarrouselMutation.mutateAsync({
+    const result = await createCarrouselMutation.mutateAsync({
       titre: titleSlide.titre,
       thematique: titleSlide.thematique,
-      emailDestination: emailDestination || undefined,
+      emailDestination: undefined,
       slides: JSON.stringify(slides),
     });
+    if (result.id) {
+      setCarrouselId(result.id);
+    }
   };
 
   const exportToExcel = () => {
@@ -281,6 +284,32 @@ export default function Generator() {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Carrousel");
     XLSX.writeFile(workbook, "Modele_Carrousel_GdN.xlsx");
     toast.success("Fichier Excel téléchargé avec succès");
+  };
+
+  const sendEmailMutation = trpc.email.sendCarrousel.useMutation({
+    onSuccess: () => {
+      toast.success("✉️ Email envoyé avec succès");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erreur lors de l'envoi de l'email");
+    },
+  });
+
+  const exportAndSendEmail = async () => {
+    // First, export to Excel
+    exportToExcel();
+
+    // Then, save the carrousel if not already saved
+    if (!carrouselId) {
+      toast.error("⚠️ Veuillez d'abord enregistrer le carrousel");
+      return;
+    }
+
+    // Send email with the carrousel
+    await sendEmailMutation.mutateAsync({
+      carrouselId: carrouselId,
+      emailTo: "", // Will use SMTP destination email
+    });
   };
 
   const renderSlideForm = (slide: Slide, index: number) => {
@@ -508,19 +537,7 @@ export default function Generator() {
           </p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Email de destination (optionnel)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Input
-              type="email"
-              value={emailDestination}
-              onChange={(e) => setEmailDestination(e.target.value)}
-              placeholder="email@example.com"
-            />
-          </CardContent>
-        </Card>
+
 
         <div className="space-y-4">
           {slides.map((slide, index) => (
@@ -544,6 +561,10 @@ export default function Generator() {
           <Button onClick={exportToExcel} variant="secondary">
             <Download className="w-4 h-4 mr-2" />
             Télécharger Excel
+          </Button>
+          <Button onClick={exportAndSendEmail} variant="default">
+            <Mail className="w-4 h-4 mr-2" />
+            Envoyer et Télécharger
           </Button>
         </div>
       </div>

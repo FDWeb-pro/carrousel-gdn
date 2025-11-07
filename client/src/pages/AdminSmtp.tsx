@@ -27,6 +27,7 @@ export default function AdminSmtp() {
     user: "",
     pass: "",
     from: "",
+    destinationEmail: "",
   });
 
   useEffect(() => {
@@ -38,6 +39,7 @@ export default function AdminSmtp() {
         user: smtpConfig.user || "",
         pass: smtpConfig.pass || "",
         from: smtpConfig.from || "",
+        destinationEmail: smtpConfig.destinationEmail || "",
       });
     }
   }, [smtpConfig]);
@@ -51,6 +53,7 @@ export default function AdminSmtp() {
       user: form.user,
       pass: form.pass,
       from: form.from,
+      destinationEmail: form.destinationEmail,
     });
   };
 
@@ -159,6 +162,21 @@ export default function AdminSmtp() {
                   />
                   <p className="text-sm text-muted-foreground">
                     Si vide, utilise le nom d'utilisateur
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="destinationEmail">Email de destination *</Label>
+                  <Input
+                    id="destinationEmail"
+                    type="email"
+                    value={form.destinationEmail}
+                    onChange={(e) => setForm({ ...form, destinationEmail: e.target.value })}
+                    placeholder="destination@example.com"
+                    required
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Adresse email qui recevra tous les fichiers Excel générés
                   </p>
                 </div>
 
