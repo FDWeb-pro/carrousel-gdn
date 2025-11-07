@@ -308,7 +308,7 @@ export default function Generator() {
     // Send email with the carrousel
     await sendEmailMutation.mutateAsync({
       carrouselId: carrouselId,
-      emailTo: "", // Will use SMTP destination email
+      emailTo: undefined, // Will use SMTP destination email
     });
   };
 

@@ -84,3 +84,7 @@
 - [x] Ajouter un champ "Email de destination" dans les paramètres SMTP
 - [x] Ajouter un bouton "Envoyer et Télécharger" dans le générateur
 - [x] Implémenter la logique d'envoi automatique à l'adresse SMTP configurée
+
+
+## Correction bug envoi email
+- [x] Corriger la validation Zod pour accepter undefined au lieu de chaîne vide dans emailTo
