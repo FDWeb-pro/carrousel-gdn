@@ -18,6 +18,41 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
+type Provider = "infomaniak" | "openai" | "mistral" | "claude" | "gemini";
+
+const PROVIDER_INFO = {
+  infomaniak: {
+    name: "Infomaniak",
+    docs: "https://developer.infomaniak.com/docs/api/post/1/ai/%7Bproduct_id%7D/openai/chat/completions",
+    models: ["mixtral", "mistral31", "mistral24b", "llama3", "granite", "reasoning"],
+    defaultModel: "mixtral",
+  },
+  openai: {
+    name: "OpenAI",
+    docs: "https://platform.openai.com/docs/api-reference/chat/create",
+    models: ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"],
+    defaultModel: "gpt-4o-mini",
+  },
+  mistral: {
+    name: "Mistral AI",
+    docs: "https://docs.mistral.ai/api/",
+    models: ["mistral-large-latest", "mistral-medium-latest", "mistral-small-latest", "open-mixtral-8x7b"],
+    defaultModel: "mistral-small-latest",
+  },
+  claude: {
+    name: "Claude (Anthropic)",
+    docs: "https://docs.anthropic.com/claude/reference/messages_post",
+    models: ["claude-3-5-sonnet-20241022", "claude-3-5-haiku-20241022", "claude-3-opus-20240229"],
+    defaultModel: "claude-3-5-haiku-20241022",
+  },
+  gemini: {
+    name: "Gemini (Google)",
+    docs: "https://ai.google.dev/api/rest/v1beta/models/generateContent",
+    models: ["gemini-2.0-flash-exp", "gemini-1.5-pro", "gemini-1.5-flash"],
+    defaultModel: "gemini-2.0-flash-exp",
+  },
+};
+
 export default function AdminAIConfig() {
   const { user } = useAuth();
   const utils = trpc.useUtils();
@@ -33,8 +68,11 @@ export default function AdminAIConfig() {
   });
 
   const [formData, setFormData] = useState({
+    provider: "infomaniak" as Provider,
     apiToken: "",
     productId: "",
+    organizationId: "",
+    anthropicVersion: "2023-06-01",
     model: "mixtral",
     maxTokens: 200,
     temperature: 70,
@@ -44,15 +82,30 @@ export default function AdminAIConfig() {
   useEffect(() => {
     if (config) {
       setFormData({
+        provider: (config.provider as Provider) || "infomaniak",
         apiToken: config.apiToken || "",
         productId: config.productId || "",
-        model: config.model || "mixtral",
+        organizationId: config.organizationId || "",
+        anthropicVersion: config.anthropicVersion || "2023-06-01",
+        model: config.model || PROVIDER_INFO[config.provider as Provider]?.defaultModel || "mixtral",
         maxTokens: config.maxTokens || 200,
         temperature: config.temperature || 70,
         isEnabled: config.isEnabled || 0,
       });
     }
   }, [config]);
+
+  const handleProviderChange = (provider: Provider) => {
+    setFormData({
+      ...formData,
+      provider,
+      model: PROVIDER_INFO[provider].defaultModel,
+      // Reset provider-specific fields
+      productId: "",
+      organizationId: "",
+      anthropicVersion: "2023-06-01",
+    });
+  };
 
   const handleSave = async () => {
     await updateMutation.mutateAsync(formData);
@@ -82,6 +135,8 @@ export default function AdminAIConfig() {
     );
   }
 
+  const currentProvider = PROVIDER_INFO[formData.provider];
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -91,24 +146,24 @@ export default function AdminAIConfig() {
             Configuration IA
           </h1>
           <p className="text-muted-foreground mt-2">
-            Configurez l'API Infomaniak pour la génération automatique de descriptions d'images
+            Configurez le fournisseur d'IA pour la génération automatique de descriptions d'images
           </p>
         </div>
 
         <Alert>
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Obtenir vos identifiants API</AlertTitle>
+          <AlertTitle>Fournisseur sélectionné : {currentProvider.name}</AlertTitle>
           <AlertDescription className="space-y-2">
             <p>
-              Pour utiliser la fonctionnalité IA, vous devez obtenir un token API et un Product ID depuis votre compte Infomaniak.
+              Pour utiliser {currentProvider.name}, vous devez obtenir une clé API depuis votre compte.
             </p>
             <a
-              href="https://developer.infomaniak.com/docs/api/post/1/ai/%7Bproduct_id%7D/openai/chat/completions"
+              href={currentProvider.docs}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-primary hover:underline"
             >
-              Consulter la documentation Infomaniak
+              Consulter la documentation {currentProvider.name}
               <ExternalLink className="w-3 h-3" />
             </a>
           </AlertDescription>
@@ -116,38 +171,112 @@ export default function AdminAIConfig() {
 
         <Card>
           <CardHeader>
+            <CardTitle>Sélection du fournisseur</CardTitle>
+            <CardDescription>
+              Choisissez le fournisseur d'IA à utiliser pour la génération
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="provider">Fournisseur d'IA</Label>
+              <Select
+                value={formData.provider}
+                onValueChange={(value) => handleProviderChange(value as Provider)}
+              >
+                <SelectTrigger id="provider">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="infomaniak">Infomaniak</SelectItem>
+                  <SelectItem value="openai">OpenAI</SelectItem>
+                  <SelectItem value="mistral">Mistral AI</SelectItem>
+                  <SelectItem value="claude">Claude (Anthropic)</SelectItem>
+                  <SelectItem value="gemini">Gemini (Google)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle>Paramètres de l'API</CardTitle>
             <CardDescription>
-              Configurez les paramètres de connexion à l'API Infomaniak
+              Configurez les paramètres de connexion à {currentProvider.name}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="apiToken">Token API *</Label>
+              <Label htmlFor="apiToken">Clé API *</Label>
               <Input
                 id="apiToken"
                 type="password"
-                placeholder="Bearer token..."
+                placeholder={
+                  formData.provider === "openai" ? "sk-..." :
+                  formData.provider === "mistral" ? "..." :
+                  formData.provider === "claude" ? "sk-ant-..." :
+                  formData.provider === "gemini" ? "AIza..." :
+                  "Bearer token..."
+                }
                 value={formData.apiToken}
                 onChange={(e) => setFormData({ ...formData, apiToken: e.target.value })}
               />
               <p className="text-xs text-muted-foreground">
-                Le token d'authentification fourni par Infomaniak
+                {formData.provider === "openai" && "Votre clé API OpenAI (commence par sk-)"}
+                {formData.provider === "mistral" && "Votre clé API Mistral AI"}
+                {formData.provider === "claude" && "Votre clé API Anthropic (commence par sk-ant-)"}
+                {formData.provider === "gemini" && "Votre clé API Google AI (commence par AIza)"}
+                {formData.provider === "infomaniak" && "Le token d'authentification fourni par Infomaniak"}
               </p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="productId">Product ID *</Label>
-              <Input
-                id="productId"
-                placeholder="88888"
-                value={formData.productId}
-                onChange={(e) => setFormData({ ...formData, productId: e.target.value })}
-              />
-              <p className="text-xs text-muted-foreground">
-                L'identifiant de votre produit LLM API Infomaniak
-              </p>
-            </div>
+            {/* Champs spécifiques Infomaniak */}
+            {formData.provider === "infomaniak" && (
+              <div className="space-y-2">
+                <Label htmlFor="productId">Product ID *</Label>
+                <Input
+                  id="productId"
+                  placeholder="88888"
+                  value={formData.productId}
+                  onChange={(e) => setFormData({ ...formData, productId: e.target.value })}
+                />
+                <p className="text-xs text-muted-foreground">
+                  L'identifiant de votre produit LLM API Infomaniak
+                </p>
+              </div>
+            )}
+
+            {/* Champs spécifiques OpenAI */}
+            {formData.provider === "openai" && (
+              <div className="space-y-2">
+                <Label htmlFor="organizationId">Organization ID (optionnel)</Label>
+                <Input
+                  id="organizationId"
+                  placeholder="org-..."
+                  value={formData.organizationId}
+                  onChange={(e) => setFormData({ ...formData, organizationId: e.target.value })}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Votre ID d'organisation OpenAI (optionnel)
+                </p>
+              </div>
+            )}
+
+            {/* Champs spécifiques Claude */}
+            {formData.provider === "claude" && (
+              <div className="space-y-2">
+                <Label htmlFor="anthropicVersion">Version de l'API</Label>
+                <Input
+                  id="anthropicVersion"
+                  placeholder="2023-06-01"
+                  value={formData.anthropicVersion}
+                  onChange={(e) => setFormData({ ...formData, anthropicVersion: e.target.value })}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Version de l'API Anthropic (format: YYYY-MM-DD)
+                </p>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="model">Modèle</Label>
@@ -159,16 +288,15 @@ export default function AdminAIConfig() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="mixtral">Mixtral</SelectItem>
-                  <SelectItem value="mistral31">Mistral 3.1</SelectItem>
-                  <SelectItem value="mistral24b">Mistral 24B</SelectItem>
-                  <SelectItem value="llama3">Llama 3</SelectItem>
-                  <SelectItem value="granite">Granite</SelectItem>
-                  <SelectItem value="reasoning">Reasoning</SelectItem>
+                  {currentProvider.models.map((model) => (
+                    <SelectItem key={model} value={model}>
+                      {model}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
-                Le modèle de langage à utiliser (Mixtral recommandé)
+                Le modèle de langage à utiliser
               </p>
             </div>
 
@@ -223,7 +351,8 @@ export default function AdminAIConfig() {
             <div className="flex justify-end">
               <Button
                 onClick={handleSave}
-                disabled={updateMutation.isPending || !formData.apiToken || !formData.productId}
+                disabled={updateMutation.isPending || !formData.apiToken || 
+                  (formData.provider === "infomaniak" && !formData.productId)}
               >
                 {updateMutation.isPending ? (
                   <>
@@ -246,7 +375,7 @@ export default function AdminAIConfig() {
             <Sparkles className="h-4 w-4" />
             <AlertTitle>Fonctionnalité activée</AlertTitle>
             <AlertDescription>
-              Les utilisateurs peuvent maintenant utiliser le bouton "Générer description" dans le générateur de carrousels pour créer automatiquement des descriptions d'images basées sur le contenu texte de leurs slides.
+              Les utilisateurs peuvent maintenant utiliser le bouton "Générer description" dans le générateur de carrousels pour créer automatiquement des descriptions d'images avec {currentProvider.name}.
             </AlertDescription>
           </Alert>
         )}

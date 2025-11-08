@@ -391,7 +391,7 @@ export default function Generator() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label>Thématique</Label>
+              <Label className="mb-2 block">Thématique</Label>
               <Input
                 value={slide.thematique || ""}
                 onChange={(e) => updateSlide(index, "thematique", e.target.value)}
@@ -399,7 +399,7 @@ export default function Generator() {
               />
             </div>
             <div>
-              <Label>Titre du carrousel</Label>
+              <Label className="mb-2 block">Titre du carrousel</Label>
               <Input
                 value={slide.titre || ""}
                 onChange={(e) => updateSlide(index, "titre", e.target.value)}
@@ -428,7 +428,7 @@ export default function Generator() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label>Nom de l'expert</Label>
+              <Label className="mb-2 block">Nom de l'expert</Label>
               <Input
                 value={slide.expert || ""}
                 onChange={(e) => updateSlide(index, "expert", e.target.value)}
@@ -436,7 +436,7 @@ export default function Generator() {
               />
             </div>
             <div>
-              <Label>Expertise</Label>
+              <Label className="mb-2 block">Expertise</Label>
               <Input
                 value={slide.expertise || ""}
                 onChange={(e) => updateSlide(index, "expertise", e.target.value)}
@@ -444,7 +444,7 @@ export default function Generator() {
               />
             </div>
             <div>
-              <Label>URL de l'offre</Label>
+              <Label className="mb-2 block">URL de l'offre</Label>
               <Input
                 type="url"
                 value={slide.url || ""}
@@ -482,7 +482,7 @@ export default function Generator() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Type de slide</Label>
+            <Label className="mb-2 block">Type de slide</Label>
             <Select
               value={slide.type}
               onValueChange={(value) => updateSlide(index, "type", value)}
@@ -505,7 +505,7 @@ export default function Generator() {
           {slide.type === "type5" ? (
             <>
               <div>
-                <Label>Texte 1 (max {charLimit} car.)</Label>
+                <Label className="mb-2 block">Texte 1 (max {charLimit} car.)</Label>
                 <Textarea
                   value={slide.texte1 || ""}
                   onChange={(e) => updateSlide(index, "texte1", e.target.value)}
@@ -516,7 +516,7 @@ export default function Generator() {
                 </p>
               </div>
               <div>
-                <Label>Texte 2 (max {charLimit} car.)</Label>
+                <Label className="mb-2 block">Texte 2 (max {charLimit} car.)</Label>
                 <Textarea
                   value={slide.texte2 || ""}
                   onChange={(e) => updateSlide(index, "texte2", e.target.value)}
@@ -524,7 +524,7 @@ export default function Generator() {
                 />
               </div>
               <div>
-                <Label>Texte 3 (max {charLimit} car.)</Label>
+                <Label className="mb-2 block">Texte 3 (max {charLimit} car.)</Label>
                 <Textarea
                   value={slide.texte3 || ""}
                   onChange={(e) => updateSlide(index, "texte3", e.target.value)}
@@ -532,7 +532,7 @@ export default function Generator() {
                 />
               </div>
               <div>
-                <Label>Texte 4 (max {charLimit} car.)</Label>
+                <Label className="mb-2 block">Texte 4 (max {charLimit} car.)</Label>
                 <Textarea
                   value={slide.texte4 || ""}
                   onChange={(e) => updateSlide(index, "texte4", e.target.value)}
@@ -540,12 +540,14 @@ export default function Generator() {
                 />
               </div>
               <div>
-                <Label>Prompt Image 1</Label>
+                <Label className="mb-2 block">Prompt Image 1</Label>
                 <div className="flex gap-2">
-                  <Input
+                  <Textarea
                     value={slide.promptImage1 || ""}
                     onChange={(e) => updateSlide(index, "promptImage1", e.target.value)}
                     placeholder="Description de l'image à générer"
+                    rows={3}
+                    className="resize-y"
                   />
                   <Button
                     type="button"
@@ -564,12 +566,14 @@ export default function Generator() {
                 </div>
               </div>
               <div>
-                <Label>Prompt Image 2</Label>
+                <Label className="mb-2 block">Prompt Image 2</Label>
                 <div className="flex gap-2">
-                  <Input
+                  <Textarea
                     value={slide.promptImage2 || ""}
                     onChange={(e) => updateSlide(index, "promptImage2", e.target.value)}
                     placeholder="Description de l'image à générer"
+                    rows={3}
+                    className="resize-y"
                   />
                   <Button
                     type="button"
@@ -588,12 +592,14 @@ export default function Generator() {
                 </div>
               </div>
               <div>
-                <Label>Prompt Image 3</Label>
+                <Label className="mb-2 block">Prompt Image 3</Label>
                 <div className="flex gap-2">
-                  <Input
+                  <Textarea
                     value={slide.promptImage3 || ""}
                     onChange={(e) => updateSlide(index, "promptImage3", e.target.value)}
                     placeholder="Description de l'image à générer"
+                    rows={3}
+                    className="resize-y"
                   />
                   <Button
                     type="button"
@@ -612,12 +618,14 @@ export default function Generator() {
                 </div>
               </div>
               <div>
-                <Label>Prompt Image 4</Label>
+                <Label className="mb-2 block">Prompt Image 4</Label>
                 <div className="flex gap-2">
-                  <Input
+                  <Textarea
                     value={slide.promptImage4 || ""}
                     onChange={(e) => updateSlide(index, "promptImage4", e.target.value)}
                     placeholder="Description de l'image à générer"
+                    rows={3}
+                    className="resize-y"
                   />
                   <Button
                     type="button"
@@ -639,7 +647,7 @@ export default function Generator() {
           ) : slide.type === "type4" ? (
             <>
               <div>
-                <Label>Citation (max {charLimit} car.)</Label>
+                <Label className="mb-2 block">Citation (max {charLimit} car.)</Label>
                 <Textarea
                   value={slide.texte1 || ""}
                   onChange={(e) => updateSlide(index, "texte1", e.target.value)}
@@ -650,7 +658,7 @@ export default function Generator() {
                 </p>
               </div>
               <div>
-                <Label>Auteur</Label>
+                <Label className="mb-2 block">Auteur</Label>
                 <Input
                   value={slide.auteur || ""}
                   onChange={(e) => updateSlide(index, "auteur", e.target.value)}
@@ -660,7 +668,7 @@ export default function Generator() {
           ) : (
             <>
               <div>
-                <Label>Texte (max {charLimit} car.)</Label>
+                <Label className="mb-2 block">Texte (max {charLimit} car.)</Label>
                 <Textarea
                   value={slide.texte1 || ""}
                   onChange={(e) => updateSlide(index, "texte1", e.target.value)}
@@ -672,12 +680,14 @@ export default function Generator() {
               </div>
               {(slide.type === "type2" || slide.type === "type3") && (
                 <div>
-                  <Label>Prompt Image</Label>
+                  <Label className="mb-2 block">Prompt Image</Label>
                   <div className="flex gap-2">
-                    <Input
+                    <Textarea
                       value={slide.promptImage1 || ""}
                       onChange={(e) => updateSlide(index, "promptImage1", e.target.value)}
                       placeholder="Description de l'image à générer"
+                      rows={3}
+                      className="resize-y"
                     />
                     <Button
                       type="button"

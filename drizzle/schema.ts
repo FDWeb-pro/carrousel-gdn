@@ -118,11 +118,23 @@ export type InsertAuditLog = typeof auditLog.$inferInsert;
  */
 export const aiConfig = mysqlTable("ai_config", {
   id: int("id").autoincrement().primaryKey(),
+  provider: mysqlEnum("provider", ["infomaniak", "openai", "mistral", "claude", "gemini"]).default("infomaniak").notNull(),
+  
+  // Champs communs
   apiToken: varchar("apiToken", { length: 500 }),
-  productId: varchar("productId", { length: 100 }),
   model: varchar("model", { length: 50 }).default("mixtral"),
   maxTokens: int("maxTokens").default(200),
   temperature: int("temperature").default(70), // Stored as integer (0.7 * 100)
+  
+  // Champs spécifiques Infomaniak
+  productId: varchar("productId", { length: 100 }), // Infomaniak uniquement
+  
+  // Champs spécifiques OpenAI
+  organizationId: varchar("organizationId", { length: 100 }), // OpenAI uniquement
+  
+  // Champs spécifiques Anthropic (Claude)
+  anthropicVersion: varchar("anthropicVersion", { length: 50 }), // Claude uniquement
+  
   isEnabled: int("isEnabled").default(0).notNull(), // 0 = désactivé, 1 = activé
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

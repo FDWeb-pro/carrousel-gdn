@@ -602,8 +602,11 @@ export const appRouter = router({
       }
       return next({ ctx });
     }).input(z.object({
+      provider: z.enum(["infomaniak", "openai", "mistral", "claude", "gemini"]).optional(),
       apiToken: z.string().optional(),
       productId: z.string().optional(),
+      organizationId: z.string().optional(),
+      anthropicVersion: z.string().optional(),
       model: z.string().optional(),
       maxTokens: z.number().optional(),
       temperature: z.number().optional(),
@@ -629,47 +632,160 @@ export const appRouter = router({
     })).mutation(async ({ input }) => {
       const config = await db.getAiConfig();
       
-      if (!config || !config.isEnabled || !config.apiToken || !config.productId) {
+      if (!config || !config.isEnabled || !config.apiToken) {
         throw new TRPCError({ 
           code: 'PRECONDITION_FAILED', 
           message: 'La configuration IA n\'est pas activée ou incomplète' 
         });
       }
 
-      try {
-        const response = await fetch(
-          `https://api.infomaniak.com/1/ai/${config.productId}/openai/chat/completions`,
-          {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${config.apiToken}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              messages: [
-                {
-                  role: 'system',
-                  content: 'Tu es un expert en génération de prompts pour créer des images. Tu dois créer des descriptions détaillées et visuelles pour un générateur d\'images IA, basées sur le contenu textuel fourni. Réponds uniquement avec la description de l\'image, sans introduction ni explication.'
-                },
-                {
-                  role: 'user',
-                  content: `Crée une description détaillée d'image (prompt) pour illustrer visuellement ce contenu de slide : "${input.textContent}"`
-                }
-              ],
-              model: config.model || 'mixtral',
-              max_tokens: config.maxTokens || 200,
-              temperature: (config.temperature || 70) / 100,
-              profile_type: 'creative'
-            }),
-          }
-        );
+      const systemPrompt = 'Tu es un expert en génération de prompts pour créer des images. Tu dois créer des descriptions détaillées et visuelles pour un générateur d\'images IA, basées sur le contenu textuel fourni. Réponds uniquement avec la description de l\'image, sans introduction ni explication.';
+      const userPrompt = `Crée une description détaillée d'image (prompt) pour illustrer visuellement ce contenu de slide : "${input.textContent}"`;
+      const temperature = (config.temperature || 70) / 100;
+      const maxTokens = config.maxTokens || 200;
 
-        if (!response.ok) {
-          throw new Error(`API Infomaniak error: ${response.status}`);
+      try {
+        let description: string | undefined;
+
+        // Infomaniak
+        if (config.provider === 'infomaniak') {
+          if (!config.productId) {
+            throw new Error('Product ID manquant pour Infomaniak');
+          }
+          const response = await fetch(
+            `https://api.infomaniak.com/1/ai/${config.productId}/openai/chat/completions`,
+            {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${config.apiToken}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                messages: [
+                  { role: 'system', content: systemPrompt },
+                  { role: 'user', content: userPrompt }
+                ],
+                model: config.model || 'mixtral',
+                max_tokens: maxTokens,
+                temperature,
+                profile_type: 'creative'
+              }),
+            }
+          );
+          if (!response.ok) throw new Error(`Infomaniak API error: ${response.status}`);
+          const data = await response.json();
+          description = data.choices?.[0]?.message?.content;
         }
 
-        const data = await response.json();
-        const description = data.choices?.[0]?.message?.content;
+        // OpenAI
+        else if (config.provider === 'openai') {
+          const headers: Record<string, string> = {
+            'Authorization': `Bearer ${config.apiToken}`,
+            'Content-Type': 'application/json',
+          };
+          if (config.organizationId) {
+            headers['OpenAI-Organization'] = config.organizationId;
+          }
+          const response = await fetch(
+            'https://api.openai.com/v1/chat/completions',
+            {
+              method: 'POST',
+              headers,
+              body: JSON.stringify({
+                model: config.model || 'gpt-4o-mini',
+                messages: [
+                  { role: 'system', content: systemPrompt },
+                  { role: 'user', content: userPrompt }
+                ],
+                max_tokens: maxTokens,
+                temperature,
+              }),
+            }
+          );
+          if (!response.ok) throw new Error(`OpenAI API error: ${response.status}`);
+          const data = await response.json();
+          description = data.choices?.[0]?.message?.content;
+        }
+
+        // Mistral AI
+        else if (config.provider === 'mistral') {
+          const response = await fetch(
+            'https://api.mistral.ai/v1/chat/completions',
+            {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${config.apiToken}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                model: config.model || 'mistral-small-latest',
+                messages: [
+                  { role: 'system', content: systemPrompt },
+                  { role: 'user', content: userPrompt }
+                ],
+                max_tokens: maxTokens,
+                temperature,
+              }),
+            }
+          );
+          if (!response.ok) throw new Error(`Mistral API error: ${response.status}`);
+          const data = await response.json();
+          description = data.choices?.[0]?.message?.content;
+        }
+
+        // Claude (Anthropic)
+        else if (config.provider === 'claude') {
+          const response = await fetch(
+            'https://api.anthropic.com/v1/messages',
+            {
+              method: 'POST',
+              headers: {
+                'x-api-key': config.apiToken,
+                'anthropic-version': config.anthropicVersion || '2023-06-01',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                model: config.model || 'claude-3-5-haiku-20241022',
+                max_tokens: maxTokens,
+                temperature,
+                system: systemPrompt,
+                messages: [
+                  { role: 'user', content: userPrompt }
+                ],
+              }),
+            }
+          );
+          if (!response.ok) throw new Error(`Claude API error: ${response.status}`);
+          const data = await response.json();
+          description = data.content?.[0]?.text;
+        }
+
+        // Gemini (Google)
+        else if (config.provider === 'gemini') {
+          const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${config.model || 'gemini-2.0-flash-exp'}:generateContent?key=${config.apiToken}`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                contents: [{
+                  parts: [{
+                    text: `${systemPrompt}\n\n${userPrompt}`
+                  }]
+                }],
+                generationConfig: {
+                  temperature,
+                  maxOutputTokens: maxTokens,
+                }
+              }),
+            }
+          );
+          if (!response.ok) throw new Error(`Gemini API error: ${response.status}`);
+          const data = await response.json();
+          description = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        }
 
         if (!description) {
           throw new Error('No description generated');
@@ -677,7 +793,7 @@ export const appRouter = router({
 
         return { description };
       } catch (error: any) {
-        console.error('Error calling Infomaniak API:', error);
+        console.error(`Error calling ${config.provider} API:`, error);
         throw new TRPCError({ 
           code: 'INTERNAL_SERVER_ERROR', 
           message: `Erreur lors de la génération: ${error.message}` 

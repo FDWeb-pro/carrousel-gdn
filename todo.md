@@ -169,3 +169,18 @@
 - [x] Ajouter des boutons "Générer description d'image" dans le générateur à côté de chaque prompt image
 - [x] Implémenter la logique de génération basée sur le contenu texte de la slide
 - [x] Ajouter le menu "Configuration IA" dans la navigation (super_admin uniquement)
+
+
+## Améliorations UX du Générateur
+- [x] Augmenter l'espacement sous les labels dans le générateur de slides
+- [x] Remplacer les Input par des Textarea pour les champs Prompt Image (3 lignes, redimensionnable)
+
+## Extension Multi-Provider IA
+- [x] Ajouter un champ "provider" dans la table aiConfig (infomaniak, openai, mistral, claude, gemini)
+- [x] Adapter le schéma pour stocker les configurations spécifiques à chaque provider
+- [x] Modifier AdminAIConfig pour permettre la sélection du provider
+- [x] Adapter l'interface de configuration selon le provider sélectionné
+- [x] Implémenter la logique backend pour OpenAI
+- [x] Implémenter la logique backend pour Mistral AI
+- [x] Implémenter la logique backend pour Claude (Anthropic)
+- [x] Implémenter la logique backend pour Gemini (Google)
