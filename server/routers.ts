@@ -25,6 +25,15 @@ export const appRouter = router({
 
   // User management routes (admin only)
   users: router({
+    updateProfile: protectedProcedure.input(z.object({
+      firstName: z.string(),
+      lastName: z.string(),
+      fonction: z.string().optional(),
+    })).mutation(async ({ ctx, input }) => {
+      await db.updateUserProfile(ctx.user.id, input);
+      return { success: true };
+    }),
+
     list: protectedProcedure.use(({ ctx, next }) => {
       if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
         throw new TRPCError({ code: 'FORBIDDEN' });
@@ -231,7 +240,10 @@ export const appRouter = router({
       thematique: z.string(),
       emailDestination: z.string().email().optional(),
       slides: z.string(), // JSON string
-    })).mutation(async ({ input, ctx }) => {
+    })).mutation(async ({ ctx, input }) => {
+      // Ajouter ou mettre à jour la thématique
+      await db.upsertThematique(input.thematique);
+      
       const result = await db.createCarrousel({
         ...input,
         userId: ctx.user.id,
@@ -582,6 +594,19 @@ export const appRouter = router({
         details: JSON.stringify({ clearedBy: ctx.user.name }),
       });
       return { success: true };
+    }),
+  }),
+
+  // Thematiques
+  thematiques: router({
+    list: publicProcedure.query(async () => {
+      return db.getAllThematiques();
+    }),
+
+    search: publicProcedure.input(z.object({
+      searchTerm: z.string()
+    })).query(async ({ input }) => {
+      return db.searchThematiques(input.searchTerm);
     }),
   }),
 

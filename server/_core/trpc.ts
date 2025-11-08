@@ -32,6 +32,14 @@ const requireUser = t.middleware(async opts => {
       message: "Votre demande d'accès a été refusée. Veuillez contacter un administrateur." 
     });
   }
+  
+  // Block blocked users
+  if (ctx.user.status === 'blocked') {
+    throw new TRPCError({ 
+      code: "FORBIDDEN", 
+      message: "Votre compte a été bloqué par un administrateur. Veuillez contacter le support." 
+    });
+  }
 
   return next({
     ctx: {

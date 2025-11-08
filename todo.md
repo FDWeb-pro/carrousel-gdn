@@ -202,3 +202,22 @@
 - [x] Ajouter un bouton "Dupliquer" dans la page Historique
 - [x] Créer la logique pour charger un carrousel dupliqué dans le générateur
 - [x] Réinitialiser l'ID du carrousel pour créer une nouvelle copie
+
+
+## Système de thématiques partagées
+- [x] Créer une table thematiques dans la base de données
+- [x] Ajouter automatiquement les nouvelles thématiques lors de la création de carrousels
+- [x] Implémenter l'auto-complétion dans le champ thématique du générateur
+- [x] Éviter les doublons dans la liste des thématiques
+
+## Profil utilisateur enrichi
+- [x] Ajouter les champs fonction, firstName et lastName dans la table users
+- [x] Créer une page de profil utilisateur accessible depuis le menu déroulant
+- [x] Permettre la modification du nom, prénom et fonction
+- [x] Pré-remplir le champ "Expertise" avec la fonction de l'utilisateur
+- [x] Pré-remplir le champ "Nom de l'expert" avec le nom complet de l'utilisateur
+
+## Correction du blocage d'utilisateurs
+- [x] Vérifier la logique de blocage dans le système d'authentification
+- [x] Empêcher la connexion des utilisateurs avec status="blocked"
+- [x] Afficher un message approprié aux utilisateurs bloqués

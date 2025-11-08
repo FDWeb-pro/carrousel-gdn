@@ -1,6 +1,6 @@
-import { eq, desc, and } from "drizzle-orm";
+import { eq, sql, like, desc, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { carrousels, InsertCarrousel, InsertSlideTypeConfig, InsertUser, slideTypesConfig, users, smtpConfig, InsertSmtpConfig, notifications, InsertNotification, auditLog, InsertAuditLog, aiConfig, InsertAiConfig } from "../drizzle/schema";
+import { carrousels, InsertCarrousel, InsertSlideTypeConfig, InsertUser, slideTypesConfig, users, smtpConfig, InsertSmtpConfig, notifications, InsertNotification, auditLog, InsertAuditLog, aiConfig, InsertAiConfig, thematiques, InsertThematique } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -176,6 +176,16 @@ export async function unblockUser(userId: number) {
   const db = await getDb();
   if (!db) throw new Error('Database not available');
   await db.update(users).set({ status: 'approved' }).where(eq(users.id, userId));
+}
+
+export async function updateUserProfile(userId: number, profile: { firstName: string; lastName: string; fonction?: string }) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  await db.update(users).set({
+    firstName: profile.firstName,
+    lastName: profile.lastName,
+    fonction: profile.fonction || null,
+  }).where(eq(users.id, userId));
 }
 
 export async function deleteUser(userId: number) {
@@ -371,4 +381,52 @@ export async function getAllAdmins() {
   if (!db) return [];
   const allUsers = await db.select().from(users).where(eq(users.status, 'approved'));
   return allUsers.filter(u => u.role === 'admin' || u.role === 'super_admin');
+}
+
+
+// Thematiques queries
+export async function getAllThematiques() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(thematiques).orderBy(desc(thematiques.usageCount));
+}
+
+export async function searchThematiques(searchTerm: string) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(thematiques)
+    .where(like(thematiques.name, `%${searchTerm}%`))
+    .orderBy(desc(thematiques.usageCount))
+    .limit(10);
+}
+
+export async function upsertThematique(name: string) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  // Normaliser le nom (trim, première lettre en majuscule)
+  const normalizedName = name.trim().charAt(0).toUpperCase() + name.trim().slice(1).toLowerCase();
+  
+  // Vérifier si la thématique existe déjà
+  const existing = await db.select().from(thematiques)
+    .where(eq(thematiques.name, normalizedName))
+    .limit(1);
+  
+  if (existing.length > 0) {
+    // Incrémenter le compteur d'utilisation
+    await db.update(thematiques)
+      .set({ usageCount: sql`${thematiques.usageCount} + 1` })
+      .where(eq(thematiques.id, existing[0].id));
+    return existing[0];
+  } else {
+    // Créer une nouvelle thématique
+    await db.insert(thematiques).values({
+      name: normalizedName,
+      usageCount: 1
+    });
+    const newThematique = await db.select().from(thematiques)
+      .where(eq(thematiques.name, normalizedName))
+      .limit(1);
+    return newThematique[0];
+  }
 }

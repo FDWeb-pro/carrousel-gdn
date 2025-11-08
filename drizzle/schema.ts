@@ -14,6 +14,9 @@ export const users = mysqlTable("users", {
   /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
+  firstName: varchar("firstName", { length: 100 }),
+  lastName: varchar("lastName", { length: 100 }),
+  fonction: varchar("fonction", { length: 255 }),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["membre", "admin", "super_admin"]).default("membre").notNull(),
@@ -142,3 +145,17 @@ export const aiConfig = mysqlTable("ai_config", {
 
 export type AiConfig = typeof aiConfig.$inferSelect;
 export type InsertAiConfig = typeof aiConfig.$inferInsert;
+
+/**
+ * Thématiques partagées - liste unique de thématiques utilisées dans les carrousels
+ */
+export const thematiques = mysqlTable("thematiques", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull().unique(),
+  usageCount: int("usageCount").default(0).notNull(), // Nombre de fois utilisée
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Thematique = typeof thematiques.$inferSelect;
+export type InsertThematique = typeof thematiques.$inferInsert;

@@ -64,6 +64,13 @@
       "when": 1762617575873,
       "tag": "0008_overjoyed_hellfire_club",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1762621824520,
+      "tag": "0009_flashy_garia",
+      "breakpoints": true
     }
   ]
 }

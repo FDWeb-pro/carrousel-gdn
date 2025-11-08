@@ -14,6 +14,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { Download, Loader2, Mail, Plus, RotateCcw, Save, Sparkles, Trash2 } from "lucide-react";
+import ThematiqueAutocomplete from "@/components/ThematiqueAutocomplete";
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
@@ -61,10 +62,21 @@ export default function Generator() {
       toast.error(error.message || "Erreur lors de l'enregistrement");
     },
   });
+  
+  const getDefaultExpertName = () => {
+    if (!user) return "";
+    const firstName = user.firstName || "";
+    const lastName = user.lastName || "";
+    return `${firstName} ${lastName}`.trim();
+  };
+
+  const getDefaultExpertise = () => {
+    return user?.fonction || "";
+  };
 
   const [slides, setSlides] = useState<Slide[]>([
     { page: 1, type: "Titre", thematique: "", titre: "" },
-    { page: 10, type: "Finale", expert: "", expertise: "", url: "" },
+    { page: 10, type: "Finale", expert: getDefaultExpertName(), expertise: getDefaultExpertise(), url: "" },
   ]);
   const [carrouselId, setCarrouselId] = useState<number | null>(null);
   const [generatingPrompt, setGeneratingPrompt] = useState<string | null>(null);
@@ -414,7 +426,7 @@ export default function Generator() {
     if (confirm("⚠️ Êtes-vous sûr de vouloir réinitialiser le carrousel ? Toutes les données non enregistrées seront perdues.")) {
       setSlides([
         { page: 1, type: "Titre", thematique: "", titre: "" },
-        { page: 10, type: "Finale", expert: "", expertise: "", url: "" },
+        { page: 10, type: "Finale", expert: getDefaultExpertName(), expertise: getDefaultExpertise(), url: "" },
       ]);
       setCarrouselId(null);
       setHasUnsavedChanges(false);
@@ -478,9 +490,9 @@ export default function Generator() {
           <CardContent className="space-y-4">
             <div>
               <Label className="mb-2 block">Thématique</Label>
-              <Input
+              <ThematiqueAutocomplete
                 value={slide.thematique || ""}
-                onChange={(e) => updateSlide(index, "thematique", e.target.value)}
+                onChange={(value) => updateSlide(index, "thematique", value)}
                 placeholder="Ex: Intelligence Artificielle, Transformation digitale..."
               />
             </div>
