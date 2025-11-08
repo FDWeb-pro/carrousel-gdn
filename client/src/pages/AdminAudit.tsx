@@ -10,10 +10,85 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc";
-import { FileText, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Download, FileText, Loader2, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function AdminAudit() {
   const { data: auditLogs, isLoading } = trpc.audit.list.useQuery({ limit: 100 });
+  const utils = trpc.useUtils();
+  const clearAuditMutation = trpc.audit.clear.useMutation({
+    onSuccess: () => {
+      toast.success("Historique d'audit effacé avec succès");
+      utils.audit.list.invalidate();
+    },
+    onError: (error: { message: string }) => {
+      toast.error("Erreur lors de l'effacement de l'historique", {
+        description: error.message,
+      });
+    },
+  });
+
+  const handleExportCSV = () => {
+    if (!auditLogs || auditLogs.length === 0) {
+      toast.error("Aucune donnée à exporter");
+      return;
+    }
+
+    // Créer le contenu CSV
+    const headers = ["Date", "Utilisateur", "Action", "Type d'entité", "ID Entité", "Détails"];
+    const rows = auditLogs.map((log) => {
+      let details = "";
+      try {
+        details = log.details ? JSON.stringify(JSON.parse(log.details)) : "";
+      } catch (e) {
+        details = log.details || "";
+      }
+
+      return [
+        new Date(log.createdAt).toLocaleString("fr-FR"),
+        log.userName || "",
+        log.action,
+        log.entityType,
+        log.entityId?.toString() || "",
+        details,
+      ];
+    });
+
+    // Construire le CSV
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(",")),
+    ].join("\n");
+
+    // Télécharger le fichier
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `audit_log_${new Date().toISOString().split("T")[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast.success("Export CSV réussi");
+  };
+
+  const handleClearAudit = () => {
+    clearAuditMutation.mutate();
+  };
 
   const getActionBadge = (action: string) => {
     const styles: Record<string, string> = {
@@ -65,11 +140,48 @@ export default function AdminAudit() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Historique d'Audit</h1>
-          <p className="text-muted-foreground mt-2">
-            Consultez l'historique des actions importantes effectuées dans l'application
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Historique d'Audit</h1>
+            <p className="text-muted-foreground mt-2">
+              Consultez l'historique des actions importantes effectuées dans l'application
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={handleExportCSV}
+              disabled={!auditLogs || auditLogs.length === 0}
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Exporter CSV
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  disabled={!auditLogs || auditLogs.length === 0 || clearAuditMutation.isPending}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Effacer l'historique
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Cette action est irréversible. Tous les enregistrements d'audit seront définitivement supprimés.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleClearAudit} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    Confirmer la suppression
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
 
         {isLoading ? (

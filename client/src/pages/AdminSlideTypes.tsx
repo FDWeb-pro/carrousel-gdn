@@ -14,8 +14,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Plus, Save, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Image, Loader2, Plus, Save, Trash2, Upload } from "lucide-react";
+import { useState, useRef } from "react";
 import { toast } from "sonner";
 
 export default function AdminSlideTypes() {
@@ -39,10 +39,23 @@ export default function AdminSlideTypes() {
     },
   });
 
+  const updateImageMutation = trpc.slideTypes.updateImage.useMutation({
+    onSuccess: () => {
+      toast.success("Image mise à jour avec succès");
+      utils.slideTypes.list.invalidate();
+    },
+    onError: (error: { message: string }) => {
+      toast.error(error.message || "Erreur lors de la mise à jour de l'image");
+    },
+  });
+
   const [editingType, setEditingType] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({ label: "", charLimit: 0 });
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [createForm, setCreateForm] = useState({ typeKey: "", label: "", charLimit: 0 });
+  const [uploadingImage, setUploadingImage] = useState<string | null>(null);
+  const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+
   const createMutation = trpc.slideTypes.create.useMutation({
     onSuccess: () => {
       toast.success("Type de slide créé avec succès");
@@ -84,6 +97,46 @@ export default function AdminSlideTypes() {
       typeKey,
       isActive: currentEnabled === "true" ? "false" : "true",
     });
+  };
+
+  const handleImageUpload = async (typeKey: string, file: File) => {
+    if (!file.type.startsWith('image/')) {
+      toast.error("Veuillez sélectionner un fichier image");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("L'image ne doit pas dépasser 5 MB");
+      return;
+    }
+
+    setUploadingImage(typeKey);
+
+    try {
+      // Convert file to base64
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const base64 = e.target?.result as string;
+        await updateImageMutation.mutateAsync({
+          typeKey,
+          imageData: base64,
+          fileName: file.name,
+        });
+        setUploadingImage(null);
+      };
+      reader.onerror = () => {
+        toast.error("Erreur lors de la lecture du fichier");
+        setUploadingImage(null);
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      toast.error("Erreur lors de l'upload de l'image");
+      setUploadingImage(null);
+    }
+  };
+
+  const isFixedSlide = (typeKey: string) => {
+    return typeKey === 'titre' || typeKey === 'finale';
   };
 
   if (isLoading) {
@@ -166,13 +219,14 @@ export default function AdminSlideTypes() {
           <CardHeader>
             <CardTitle>Types de Slides</CardTitle>
             <CardDescription>
-              Configurez les limites de caractères et activez/désactivez les types
+              Configurez les limites de caractères, images et activez/désactivez les types
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Aperçu</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Label</TableHead>
                   <TableHead>Limite de caractères</TableHead>
@@ -183,6 +237,48 @@ export default function AdminSlideTypes() {
               <TableBody>
                 {slideTypes?.map((type) => (
                   <TableRow key={type.typeKey}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {type.imageUrl ? (
+                          <img
+                            src={type.imageUrl}
+                            alt={type.label}
+                            className="w-16 h-16 object-cover rounded border"
+                          />
+                        ) : (
+                          <div className="w-16 h-16 bg-muted rounded border flex items-center justify-center">
+                            <Image className="w-6 h-6 text-muted-foreground" />
+                          </div>
+                        )}
+                        <div>
+                          <input
+                            ref={(el) => { fileInputRefs.current[type.typeKey] = el; }}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                handleImageUpload(type.typeKey, file);
+                              }
+                            }}
+                          />
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => fileInputRefs.current[type.typeKey]?.click()}
+                            disabled={uploadingImage === type.typeKey}
+                          >
+                            {uploadingImage === type.typeKey ? (
+                              <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                            ) : (
+                              <Upload className="w-3 h-3 mr-1" />
+                            )}
+                            Changer
+                          </Button>
+                        </div>
+                      </div>
+                    </TableCell>
                     <TableCell className="font-mono">{type.typeKey}</TableCell>
                     <TableCell>
                       {editingType === type.typeKey ? (
@@ -212,6 +308,7 @@ export default function AdminSlideTypes() {
                         <Switch
                           checked={type.isActive === "true"}
                           onCheckedChange={() => handleToggle(type.typeKey, type.isActive)}
+                          disabled={isFixedSlide(type.typeKey)}
                         />
                         <Label className="text-sm">
                           {type.isActive === "true" ? "Activé" : "Désactivé"}
@@ -252,18 +349,20 @@ export default function AdminSlideTypes() {
                           >
                             Modifier
                           </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => {
-                              if (confirm(`Êtes-vous sûr de vouloir supprimer le type "${type.typeKey}" ?`)) {
-                                deleteMutation.mutate({ typeKey: type.typeKey });
-                              }
-                            }}
-                            disabled={deleteMutation.isPending}
-                          >
-                            <Trash2 className="w-4 h-4 text-destructive" />
-                          </Button>
+                          {!isFixedSlide(type.typeKey) && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                if (confirm(`Êtes-vous sûr de vouloir supprimer le type "${type.typeKey}" ?`)) {
+                                  deleteMutation.mutate({ typeKey: type.typeKey });
+                                }
+                              }}
+                              disabled={deleteMutation.isPending}
+                            >
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            </Button>
+                          )}
                         </div>
                       )}
                     </TableCell>

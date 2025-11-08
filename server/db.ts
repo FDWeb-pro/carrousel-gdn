@@ -230,6 +230,12 @@ export async function toggleSlideTypeConfig(typeKey: string, isActive: "true" | 
   await db.update(slideTypesConfig).set({ isActive }).where(eq(slideTypesConfig.typeKey, typeKey));
 }
 
+export async function updateSlideTypeImage(typeKey: string, imageUrl: string) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  await db.update(slideTypesConfig).set({ imageUrl }).where(eq(slideTypesConfig.typeKey, typeKey));
+}
+
 // SMTP Configuration
 export async function getSmtpConfig() {
   const db = await getDb();
@@ -306,6 +312,12 @@ export async function getAuditLogsByUser(userId: number, limit: number = 50) {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(auditLog).where(eq(auditLog.userId, userId)).orderBy(desc(auditLog.createdAt)).limit(limit);
+}
+
+export async function clearAuditLogs() {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  await db.delete(auditLog);
 }
 
 // Helper: Get all admins for notifications

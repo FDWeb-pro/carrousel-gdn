@@ -114,18 +114,23 @@
 - [x] Afficher un aperçu image dans chaque encadré de slide selon son type
 
 ## Améliorations de la page Types de Slides
-- [ ] Ajouter un champ d'upload d'image pour chaque type de slide
-- [ ] Stocker les images uploadées dans S3
-- [ ] Afficher les miniatures des slides existantes
-- [ ] Rendre la slide titre visible et modifiable (mais pas supprimable)
-- [ ] Rendre la slide finale visible et modifiable (mais pas supprimable)
+- [x] Ajouter un champ d'upload d'image pour chaque type de slide
+- [x] Stocker les images uploadées dans S3
+- [x] Afficher les miniatures des slides existantes
+- [x] Rendre la slide titre visible et modifiable (mais pas supprimable)
+- [x] Rendre la slide finale visible et modifiable (mais pas supprimable)
 
 ## Améliorations de la page Historique d'Audit
-- [ ] Ajouter un bouton d'export de l'historique (CSV ou Excel)
-- [ ] Ajouter un bouton de remise à zéro de l'historique
-- [ ] Ajouter une confirmation avant la remise à zéro
+- [x] Ajouter un bouton d'export de l'historique (CSV ou Excel)
+- [x] Ajouter un bouton de remise à zéro de l'historique
+- [x] Ajouter une confirmation avant la remise à zéro
 
 ## Nettoyage
-- [ ] Supprimer la page Test Configuration SMTP
-- [ ] Supprimer les fichiers de test inutiles
-- [ ] Nettoyer les routes de test dans routers.ts
+- [x] Supprimer la page Test Configuration SMTP
+- [x] Supprimer les fichiers de test inutiles
+- [x] Nettoyer les routes de test dans routers.ts
+
+
+## Corrections urgentes
+- [x] Ajouter les boutons d'export et remise à zéro dans la page Historique d'audit
+- [x] Vérifier et restaurer les 5 types de slides manquants dans la base de données

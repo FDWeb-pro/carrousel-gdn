@@ -315,6 +315,39 @@ export const appRouter = router({
       await db_instance.delete(slideTypesConfig).where(eq(slideTypesConfig.typeKey, input.typeKey));
       return { success: true };
     }),
+
+    updateImage: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Seuls les super administrateurs peuvent modifier les images' });
+      }
+      return next({ ctx });
+    }).input(z.object({
+      typeKey: z.string(),
+      imageData: z.string(), // base64 encoded image
+      fileName: z.string(),
+    })).mutation(async ({ input }) => {
+      // Upload image to S3
+      const { storagePut } = await import('./storage');
+      
+      // Extract base64 data and convert to buffer
+      const base64Data = input.imageData.split(',')[1];
+      const buffer = Buffer.from(base64Data, 'base64');
+      
+      // Determine content type from file extension
+      const ext = input.fileName.split('.').pop()?.toLowerCase();
+      const contentType = ext === 'png' ? 'image/png' : ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : 'image/png';
+      
+      // Generate unique file key
+      const fileKey = `slide-images/${input.typeKey}-${Date.now()}.${ext}`;
+      
+      // Upload to S3
+      const { url } = await storagePut(fileKey, buffer, contentType);
+      
+      // Update database
+      await db.updateSlideTypeImage(input.typeKey, url);
+      
+      return { success: true, imageUrl: url };
+    }),
   }),
 
   // Email sending route
@@ -326,23 +359,7 @@ export const appRouter = router({
       const { getEmailLogs } = await import('./emailLogger');
       return getEmailLogs();
     }),
-    testSmtpConfig: protectedProcedure.query(async ({ ctx }) => {
-      if (ctx.user.role !== 'super_admin' && ctx.user.role !== 'admin') {
-        throw new TRPCError({ code: 'FORBIDDEN', message: 'Accès réservé aux administrateurs' });
-      }
-      const smtpConfig = await db.getSmtpConfig();
-      return {
-        exists: !!smtpConfig,
-        host: smtpConfig?.host || null,
-        port: smtpConfig?.port || null,
-        secure: smtpConfig?.secure || null,
-        user: smtpConfig?.user || null,
-        hasPass: !!smtpConfig?.pass,
-        from: smtpConfig?.from || null,
-        destinationEmail: smtpConfig?.destinationEmail || null,
-        isValid: !!(smtpConfig && smtpConfig.host && smtpConfig.user && smtpConfig.pass),
-      };
-    }),
+
     sendCarrousel: protectedProcedure.input(z.object({
       carrouselId: z.number(),
       emailTo: z.string().email().optional(),
@@ -477,6 +494,25 @@ export const appRouter = router({
       limit: z.number().optional(),
     })).query(async ({ input }) => {
       return db.getAuditLogs(input.limit || 100);
+    }),
+
+    clear: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).mutation(async ({ ctx }) => {
+      await db.clearAuditLogs();
+      // Log this action
+      await db.createAuditLog({
+        userId: ctx.user.id,
+        userName: ctx.user.name || 'Utilisateur inconnu',
+        action: 'clear_audit_log',
+        entityType: 'audit',
+        entityId: null,
+        details: JSON.stringify({ clearedBy: ctx.user.name }),
+      });
+      return { success: true };
     }),
   }),
 });

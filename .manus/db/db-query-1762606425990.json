@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO slideTypes (typeKey, label, charLimit, isActive, imageUrl) VALUES\n('titre', 'Titre', 50, 'true', '/images/slides/Titre.png'),\n('type1', 'Introduction', 280, 'true', '/images/slides/Intro.png'),\n('type2', 'Texte simple', 280, 'true', '/images/slides/Texte.png'),\n('type3', 'Liste à puces', 280, 'true', '/images/slides/Liste.png'),\n('type4', 'Citation', 280, 'true', '/images/slides/Citation.png'),\n('type5', 'Chiffre clé', 280, 'true', '/images/slides/Chiffre.png'),\n('finale', 'Finale', 100, 'true', '/images/slides/Finale.png');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 46g1SXsBFWVbmM8.root --database iU49Pa65YLxw4BXL7ZS9xU --execute INSERT INTO slideTypes (typeKey, label, charLimit, isActive, imageUrl) VALUES\n('titre', 'Titre', 50, 'true', '/images/slides/Titre.png'),\n('type1', 'Introduction', 280, 'true', '/images/slides/Intro.png'),\n('type2', 'Texte simple', 280, 'true', '/images/slides/Texte.png'),\n('type3', 'Liste à puces', 280, 'true', '/images/slides/Liste.png'),\n('type4', 'Citation', 280, 'true', '/images/slides/Citation.png'),\n('type5', 'Chiffre clé', 280, 'true', '/images/slides/Chiffre.png'),\n('finale', 'Finale', 100, 'true', '/images/slides/Finale.png');",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 72
+}
