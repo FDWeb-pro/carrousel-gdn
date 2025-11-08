@@ -88,3 +88,44 @@
 
 ## Correction bug envoi email
 - [x] Corriger la validation Zod pour accepter undefined au lieu de chaîne vide dans emailTo
+
+
+## Diagnostic problème SMTP
+- [x] Vérifier la récupération de la configuration SMTP depuis la base de données
+- [x] Vérifier que la configuration est bien sauvegardée
+- [x] Ajouter des logs pour diagnostiquer le problème
+- [ ] Créer une route de test pour vérifier la configuration SMTP
+
+
+## Correction bug envoi d'email
+- [x] Ajouter des logs détaillés dans la fonction sendEmail
+- [x] Vérifier la configuration de nodemailer
+- [x] Tester l'envoi d'email avec un serveur SMTP fonctionnel (✅ FONCTIONNE)
+- [ ] Corriger le bug qui empêche l'envoi d'email dans l'application
+
+
+## Améliorations de l'interface Générateur
+- [x] Créer une barre d'actions fixe en haut de la page (sticky header)
+- [x] Déplacer tous les boutons dans cette barre fixe
+- [x] Ajouter un compteur de slides (1/8, 2/8... 8/8) sur le bouton "Ajouter une slide"
+- [x] Ajouter un bouton "Reset carrousel" pour réinitialiser
+- [x] Modifier "Envoyer et Télécharger" pour qu'il enregistre automatiquement avant d'envoyer
+- [x] Copier les images des types de slides dans le projet
+- [x] Afficher un aperçu image dans chaque encadré de slide selon son type
+
+## Améliorations de la page Types de Slides
+- [ ] Ajouter un champ d'upload d'image pour chaque type de slide
+- [ ] Stocker les images uploadées dans S3
+- [ ] Afficher les miniatures des slides existantes
+- [ ] Rendre la slide titre visible et modifiable (mais pas supprimable)
+- [ ] Rendre la slide finale visible et modifiable (mais pas supprimable)
+
+## Améliorations de la page Historique d'Audit
+- [ ] Ajouter un bouton d'export de l'historique (CSV ou Excel)
+- [ ] Ajouter un bouton de remise à zéro de l'historique
+- [ ] Ajouter une confirmation avant la remise à zéro
+
+## Nettoyage
+- [ ] Supprimer la page Test Configuration SMTP
+- [ ] Supprimer les fichiers de test inutiles
+- [ ] Nettoyer les routes de test dans routers.ts

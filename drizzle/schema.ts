@@ -46,12 +46,13 @@ export type InsertCarrousel = typeof carrousels.$inferInsert;
 /**
  * Slide types configuration table - allows admins to configure available slide types
  */
-export const slideTypesConfig = mysqlTable("slideTypesConfig", {
+export const slideTypesConfig = mysqlTable("slideTypes", {
   id: int("id").autoincrement().primaryKey(),
   typeKey: varchar("typeKey", { length: 50 }).notNull().unique(),
-  label: text("label").notNull(),
+  label: varchar("label", { length: 255 }).notNull(),
   charLimit: int("charLimit").notNull(),
-  enabled: int("enabled").default(1).notNull(), // 1 = enabled, 0 = disabled
+  isActive: mysqlEnum("isActive", ["true", "false"]).default("true").notNull(),
+  imageUrl: text("imageUrl"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

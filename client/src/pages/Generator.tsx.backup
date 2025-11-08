@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Download, Loader2, Mail, Plus, RotateCcw, Save, Trash2 } from "lucide-react";
+import { Download, Loader2, Mail, Plus, Save, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
@@ -57,7 +57,7 @@ export default function Generator() {
   ]);
   const [carrouselId, setCarrouselId] = useState<number | null>(null);
 
-  const enabledSlideTypes = slideTypesConfig?.filter((t) => t.isActive === "true") || [];
+  const enabledSlideTypes = slideTypesConfig?.filter((t) => t.enabled === 1) || [];
 
   const addSlide = () => {
     const intermediateSlides = slides.filter((s) => s.page !== 1 && s.page !== 10);
@@ -105,19 +105,6 @@ export default function Generator() {
   const getCharLimit = (type: string) => {
     const config = slideTypesConfig?.find((t) => t.typeKey === type);
     return config?.charLimit || 0;
-  };
-
-  const getSlidePreviewImage = (type: string) => {
-    const imageMap: Record<string, string> = {
-      "Titre": "/slide-previews/titre.png",
-      "type1": "/slide-previews/type1.png",
-      "type2": "/slide-previews/type2.png",
-      "type3": "/slide-previews/type3.png",
-      "type4": "/slide-previews/type4.png",
-      "type5": "/slide-previews/type5.png",
-      "Finale": "/slide-previews/final.png",
-    };
-    return imageMap[type] || "";
   };
 
   const saveCarrousel = async () => {
@@ -309,20 +296,14 @@ export default function Generator() {
   });
 
   const exportAndSendEmail = async () => {
-    // First, save the carrousel if not already saved
-    if (!carrouselId) {
-      await saveCarrousel();
-      // Wait a bit for the ID to be set
-      await new Promise(resolve => setTimeout(resolve, 500));
-    }
+    // First, export to Excel
+    exportToExcel();
 
+    // Then, save the carrousel if not already saved
     if (!carrouselId) {
-      toast.error("⚠️ Erreur lors de l'enregistrement du carrousel");
+      toast.error("⚠️ Veuillez d'abord enregistrer le carrousel");
       return;
     }
-
-    // Then, export to Excel
-    exportToExcel();
 
     // Send email with the carrousel
     await sendEmailMutation.mutateAsync({
@@ -331,32 +312,12 @@ export default function Generator() {
     });
   };
 
-  const resetCarrousel = () => {
-    if (confirm("\u26a0\ufe0f \u00cates-vous s\u00fbr de vouloir r\u00e9initialiser le carrousel ? Toutes les donn\u00e9es non enregistr\u00e9es seront perdues.")) {
-      setSlides([
-        { page: 1, type: "Titre", thematique: "", titre: "" },
-        { page: 10, type: "Finale", expert: "", expertise: "", url: "" },
-      ]);
-      setCarrouselId(null);
-      toast.success("✅ Carrousel r\u00e9initialis\u00e9");
-    }
-  };
-
   const renderSlideForm = (slide: Slide, index: number) => {
     if (slide.type === "Titre") {
       return (
         <Card className="border-2 border-blue-300 bg-blue-50">
           <CardHeader>
-            <div className="flex items-start justify-between gap-4">
-              <CardTitle className="text-blue-900 flex-1">📌 Slide 1 - Titre (Obligatoire)</CardTitle>
-              {getSlidePreviewImage(slide.type) && (
-                <img 
-                  src={getSlidePreviewImage(slide.type)} 
-                  alt="Aperçu slide titre" 
-                  className="w-32 h-32 object-cover rounded border-2 border-blue-400"
-                />
-              )}
-            </div>
+            <CardTitle className="text-blue-900">📌 Slide 1 - Titre (Obligatoire)</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -384,16 +345,7 @@ export default function Generator() {
       return (
         <Card className="border-2 border-green-300 bg-green-50">
           <CardHeader>
-            <div className="flex items-start justify-between gap-4">
-              <CardTitle className="text-green-900 flex-1">✅ Slide 10 - Finale (Obligatoire)</CardTitle>
-              {getSlidePreviewImage(slide.type) && (
-                <img 
-                  src={getSlidePreviewImage(slide.type)} 
-                  alt="Aperçu slide finale" 
-                  className="w-32 h-32 object-cover rounded border-2 border-green-400"
-                />
-              )}
-            </div>
+            <CardTitle className="text-green-900">✅ Slide 10 - Finale (Obligatoire)</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -431,22 +383,11 @@ export default function Generator() {
     return (
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-start gap-4">
-            <div className="flex-1">
-              <div className="flex justify-between items-center mb-2">
-                <CardTitle>Slide {slide.page}</CardTitle>
-                <Button variant="ghost" size="sm" onClick={() => removeSlide(index)}>
-                  <Trash2 className="w-4 h-4 text-destructive" />
-                </Button>
-              </div>
-            </div>
-            {getSlidePreviewImage(slide.type) && (
-              <img 
-                src={getSlidePreviewImage(slide.type)} 
-                alt={`Aperçu ${slide.type}`} 
-                className="w-32 h-32 object-cover rounded border-2"
-              />
-            )}
+          <div className="flex justify-between items-center">
+            <CardTitle>Slide {slide.page}</CardTitle>
+            <Button variant="ghost" size="sm" onClick={() => removeSlide(index)}>
+              <Trash2 className="w-4 h-4 text-destructive" />
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -586,51 +527,9 @@ export default function Generator() {
     );
   };
 
-  const intermediateCount = slides.filter((s) => s.page !== 1 && s.page !== 10).length;
-
   return (
     <DashboardLayout>
-      {/* Barre d'actions fixe */}
-      <div className="sticky top-0 z-50 bg-background border-b shadow-sm mb-6">
-        <div className="container py-4">
-          <div className="flex flex-wrap items-center gap-3">
-            <Button 
-              onClick={addSlide} 
-              disabled={intermediateCount >= 8}
-              size="sm"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Ajouter une slide ({intermediateCount}/8)
-            </Button>
-            <Button 
-              onClick={saveCarrousel} 
-              disabled={createCarrouselMutation.isPending}
-              size="sm"
-            >
-              {createCarrouselMutation.isPending ? (
-                <Loader2 className="w-4 h-4 animate-spin mr-2" />
-              ) : (
-                <Save className="w-4 h-4 mr-2" />
-              )}
-              Enregistrer
-            </Button>
-            <Button onClick={exportToExcel} variant="secondary" size="sm">
-              <Download className="w-4 h-4 mr-2" />
-              Télécharger Excel
-            </Button>
-            <Button onClick={exportAndSendEmail} variant="default" size="sm">
-              <Mail className="w-4 h-4 mr-2" />
-              Envoyer et Télécharger
-            </Button>
-            <Button onClick={resetCarrousel} variant="destructive" size="sm">
-              <RotateCcw className="w-4 h-4 mr-2" />
-              Reset
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-6 max-w-4xl mx-auto px-4">
+      <div className="space-y-6 max-w-4xl mx-auto">
         <div>
           <h1 className="text-3xl font-bold">Générateur de Carrousels</h1>
           <p className="text-muted-foreground mt-2">
@@ -638,10 +537,35 @@ export default function Generator() {
           </p>
         </div>
 
+
+
         <div className="space-y-4">
           {slides.map((slide, index) => (
             <div key={index}>{renderSlideForm(slide, index)}</div>
           ))}
+        </div>
+
+        <div className="flex gap-4">
+          <Button onClick={addSlide} disabled={slides.filter((s) => s.page !== 1 && s.page !== 10).length >= 8}>
+            <Plus className="w-4 h-4 mr-2" />
+            Ajouter une slide
+          </Button>
+          <Button onClick={saveCarrousel} disabled={createCarrouselMutation.isPending}>
+            {createCarrouselMutation.isPending ? (
+              <Loader2 className="w-4 h-4 animate-spin mr-2" />
+            ) : (
+              <Save className="w-4 h-4 mr-2" />
+            )}
+            Enregistrer
+          </Button>
+          <Button onClick={exportToExcel} variant="secondary">
+            <Download className="w-4 h-4 mr-2" />
+            Télécharger Excel
+          </Button>
+          <Button onClick={exportAndSendEmail} variant="default">
+            <Mail className="w-4 h-4 mr-2" />
+            Envoyer et Télécharger
+          </Button>
         </div>
       </div>
     </DashboardLayout>

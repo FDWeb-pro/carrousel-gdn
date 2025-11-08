@@ -9,8 +9,9 @@ import Generator from "./pages/Generator";
 import History from "./pages/History";
 import AdminUsers from "./pages/AdminUsers";
 import AdminSlideTypes from "./pages/AdminSlideTypes";
-import AdminSmtp from "./pages/AdminSmtp";
-import AdminAudit from "./pages/AdminAudit";
+import AdminSmtp from "@/pages/AdminSmtp";
+import AdminAudit from "@/pages/AdminAudit";
+import TestSmtp from "@/pages/TestSmtp";
 import PendingApproval from "./pages/PendingApproval";
 import AccessDenied from "./pages/AccessDenied";
 import { useAuth } from "./_core/hooks/useAuth";
@@ -58,6 +59,7 @@ function Router() {
       <Route path="/admin/slide-types" component={() => <ProtectedRoute component={AdminSlideTypes} adminOnly />} />
       <Route path="/admin/smtp" component={() => <ProtectedRoute component={AdminSmtp} adminOnly />} />
       <Route path="/admin/audit" component={() => <ProtectedRoute component={AdminAudit} adminOnly />} />
+      <Route path="/test-smtp" component={() => <ProtectedRoute component={TestSmtp} adminOnly />} />
       <Route path="/pending" component={PendingApproval} />
       <Route path="/access-denied" component={AccessDenied} />
       <Route path="/404" component={NotFound} />

@@ -263,7 +263,7 @@ export const appRouter = router({
       typeKey: z.string(),
       label: z.string(),
       charLimit: z.number(),
-      enabled: z.number(),
+      isActive: z.enum(["true", "false"]),
     })).mutation(async ({ input }) => {
       await db.upsertSlideTypeConfig(input);
       return { success: true };
@@ -276,9 +276,9 @@ export const appRouter = router({
       return next({ ctx });
     }).input(z.object({
       typeKey: z.string(),
-      enabled: z.number(),
+      isActive: z.enum(["true", "false"]),
     })).mutation(async ({ input }) => {
-      await db.toggleSlideTypeConfig(input.typeKey, input.enabled);
+      await db.toggleSlideTypeConfig(input.typeKey, input.isActive);
       return { success: true };
     }),
 
@@ -296,7 +296,7 @@ export const appRouter = router({
         typeKey: input.typeKey,
         label: input.label,
         charLimit: input.charLimit,
-        enabled: 1,
+        isActive: "true",
       });
       return { success: true };
     }),
@@ -319,6 +319,30 @@ export const appRouter = router({
 
   // Email sending route
   email: router({
+    getLogs: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== 'super_admin' && ctx.user.role !== 'admin') {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Accès réservé aux administrateurs' });
+      }
+      const { getEmailLogs } = await import('./emailLogger');
+      return getEmailLogs();
+    }),
+    testSmtpConfig: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== 'super_admin' && ctx.user.role !== 'admin') {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Accès réservé aux administrateurs' });
+      }
+      const smtpConfig = await db.getSmtpConfig();
+      return {
+        exists: !!smtpConfig,
+        host: smtpConfig?.host || null,
+        port: smtpConfig?.port || null,
+        secure: smtpConfig?.secure || null,
+        user: smtpConfig?.user || null,
+        hasPass: !!smtpConfig?.pass,
+        from: smtpConfig?.from || null,
+        destinationEmail: smtpConfig?.destinationEmail || null,
+        isValid: !!(smtpConfig && smtpConfig.host && smtpConfig.user && smtpConfig.pass),
+      };
+    }),
     sendCarrousel: protectedProcedure.input(z.object({
       carrouselId: z.number(),
       emailTo: z.string().email().optional(),
@@ -346,19 +370,27 @@ export const appRouter = router({
       const slides = JSON.parse(carrousel.slides);
       const excelBuffer = generateExcelBuffer(slides);
 
-      const emailSent = await sendEmail({
-        to: destinationEmail,
-        subject: `Carrousel GdN - ${carrousel.titre}`,
-        text: `Bonjour,\n\nVeuillez trouver ci-joint le fichier Excel du carrousel "${carrousel.titre}".\n\nThématique : ${carrousel.thematique}\n\nCordialement,\nGuichet du Numérique`,
-        html: `<p>Bonjour,</p><p>Veuillez trouver ci-joint le fichier Excel du carrousel <strong>${carrousel.titre}</strong>.</p><p>Thématique : ${carrousel.thematique}</p><p>Cordialement,<br>Guichet du Numérique</p>`,
-        attachmentBuffer: excelBuffer,
-        attachmentFilename: `Carrousel_${carrousel.titre.replace(/[^a-z0-9]/gi, '_')}.xlsx`,
-      });
+      try {
+        const emailSent = await sendEmail({
+          to: destinationEmail,
+          subject: `Carrousel GdN - ${carrousel.titre}`,
+          text: `Bonjour,\n\nVeuillez trouver ci-joint le fichier Excel du carrousel "${carrousel.titre}".\n\nThématique : ${carrousel.thematique}\n\nCordialement,\nGuichet du Numérique`,
+          html: `<p>Bonjour,</p><p>Veuillez trouver ci-joint le fichier Excel du carrousel <strong>${carrousel.titre}</strong>.</p><p>Thématique : ${carrousel.thematique}</p><p>Cordialement,<br>Guichet du Numérique</p>`,
+          attachmentBuffer: excelBuffer,
+          attachmentFilename: `Carrousel_${carrousel.titre.replace(/[^a-z0-9]/gi, '_')}.xlsx`,
+        });
 
-      if (!emailSent) {
+        if (!emailSent) {
+          throw new TRPCError({ 
+            code: 'INTERNAL_SERVER_ERROR', 
+            message: 'La configuration SMTP n\'est pas disponible. Veuillez contacter l\'administrateur.' 
+          });
+        }
+      } catch (emailError: any) {
+        console.error('[sendCarrousel] Email error:', emailError);
         throw new TRPCError({ 
           code: 'INTERNAL_SERVER_ERROR', 
-          message: 'La configuration SMTP n\'est pas disponible. Veuillez contacter l\'administrateur.' 
+          message: `Erreur d'envoi d'email: ${emailError.message || 'Erreur inconnue'}` 
         });
       }
 

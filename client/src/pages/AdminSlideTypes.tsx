@@ -74,15 +74,15 @@ export default function AdminSlideTypes() {
       typeKey,
       label: editForm.label,
       charLimit: editForm.charLimit,
-      enabled: 1,
+      isActive: "true",
     });
     setEditingType(null);
   };
 
-  const handleToggle = async (typeKey: string, currentEnabled: number) => {
+  const handleToggle = async (typeKey: string, currentEnabled: "true" | "false") => {
     await toggleMutation.mutateAsync({
       typeKey,
-      enabled: currentEnabled === 1 ? 0 : 1,
+      isActive: currentEnabled === "true" ? "false" : "true",
     });
   };
 
@@ -210,11 +210,11 @@ export default function AdminSlideTypes() {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Switch
-                          checked={type.enabled === 1}
-                          onCheckedChange={() => handleToggle(type.typeKey, type.enabled)}
+                          checked={type.isActive === "true"}
+                          onCheckedChange={() => handleToggle(type.typeKey, type.isActive)}
                         />
                         <Label className="text-sm">
-                          {type.enabled === 1 ? "Activé" : "Désactivé"}
+                          {type.isActive === "true" ? "Activé" : "Désactivé"}
                         </Label>
                       </div>
                     </TableCell>

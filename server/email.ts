@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import * as XLSX from "xlsx";
 import * as db from "./db";
+import { logEmail } from "./emailLogger";
 
 interface EmailOptions {
   to: string;
@@ -19,10 +20,21 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
   try {
     // Try to get SMTP config from database first
     const smtpConfig = await db.getSmtpConfig();
+    logEmail('info', 'SMTP Config retrieved from DB', {
+      exists: !!smtpConfig,
+      host: smtpConfig?.host,
+      user: smtpConfig?.user,
+      hasPass: !!smtpConfig?.pass,
+      port: smtpConfig?.port,
+      secure: smtpConfig?.secure,
+      from: smtpConfig?.from,
+      destinationEmail: smtpConfig?.destinationEmail,
+    });
     
     let host, port, secure, user, pass, from;
     
     if (smtpConfig && smtpConfig.host && smtpConfig.user && smtpConfig.pass) {
+      logEmail('info', 'Using database SMTP config');
       // Use database config
       host = smtpConfig.host;
       port = smtpConfig.port || 587;
@@ -39,9 +51,27 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
       pass = process.env.SMTP_PASS;
       from = process.env.SMTP_FROM || process.env.SMTP_USER;
     } else {
-      console.warn("[Email] SMTP not configured. Email not sent.");
+      logEmail('error', 'SMTP not configured. Email not sent.');
+      logEmail('error', 'Missing fields', {
+        hasSmtpConfig: !!smtpConfig,
+        hasHost: !!smtpConfig?.host,
+        hasUser: !!smtpConfig?.user,
+        hasPass: !!smtpConfig?.pass,
+        hasEnvHost: !!process.env.SMTP_HOST,
+        hasEnvUser: !!process.env.SMTP_USER,
+        hasEnvPass: !!process.env.SMTP_PASS,
+      });
       return false;
     }
+
+    logEmail('info', 'Creating transporter with config', {
+      host,
+      port,
+      secure,
+      user,
+      hasPass: !!pass,
+      from,
+    });
 
     const transporter = nodemailer.createTransport({
       host,
@@ -70,11 +100,28 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
       ];
     }
 
-    await transporter.sendMail(mailOptions);
-    console.log(`[Email] Email sent successfully to ${options.to}`);
+    logEmail('info', 'Sending email', {
+      to: options.to,
+      subject: options.subject,
+      hasAttachment: !!options.attachmentBuffer,
+    });
+
+    const result = await transporter.sendMail(mailOptions);
+    logEmail('info', 'Email sent successfully!', {
+      to: options.to,
+      messageId: result.messageId,
+      response: result.response,
+    });
     return true;
-  } catch (error) {
-    console.error("[Email] Failed to send email:", error);
+  } catch (error: any) {
+    logEmail('error', 'Failed to send email!', {
+      message: error.message,
+      code: error.code,
+      command: error.command,
+      response: error.response,
+      responseCode: error.responseCode,
+      stack: error.stack,
+    });
     return false;
   }
 }

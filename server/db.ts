@@ -219,15 +219,15 @@ export async function upsertSlideTypeConfig(data: InsertSlideTypeConfig) {
     set: {
       label: data.label,
       charLimit: data.charLimit,
-      enabled: data.enabled,
+      isActive: data.isActive,
     },
   });
 }
 
-export async function toggleSlideTypeConfig(typeKey: string, enabled: number) {
+export async function toggleSlideTypeConfig(typeKey: string, isActive: "true" | "false") {
   const db = await getDb();
   if (!db) throw new Error('Database not available');
-  await db.update(slideTypesConfig).set({ enabled }).where(eq(slideTypesConfig.typeKey, typeKey));
+  await db.update(slideTypesConfig).set({ isActive }).where(eq(slideTypesConfig.typeKey, typeKey));
 }
 
 // SMTP Configuration
