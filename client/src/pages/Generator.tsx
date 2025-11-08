@@ -14,8 +14,19 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { Download, Loader2, Mail, Plus, RotateCcw, Save, Sparkles, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useLocation } from "wouter";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import * as XLSX from "xlsx";
 
 interface Slide {
@@ -57,6 +68,11 @@ export default function Generator() {
   ]);
   const [carrouselId, setCarrouselId] = useState<number | null>(null);
   const [generatingPrompt, setGeneratingPrompt] = useState<string | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showExitDialog, setShowExitDialog] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
+  const [, navigate] = useLocation();
+  const initialSlidesRef = useRef(JSON.stringify(slides));
 
   const generateDescriptionMutation = trpc.ai.generateImageDescription.useMutation({
     onSuccess: (data, variables) => {
@@ -78,10 +94,15 @@ export default function Generator() {
       return;
     }
 
-    const newPage = intermediateSlides.length + 2;
+    const firstEnabledType = enabledSlideTypes[0];
+    if (!firstEnabledType) {
+      toast.error("Aucun type de slide actif disponible");
+      return;
+    }
+
     const newSlide: Slide = {
-      page: newPage,
-      type: enabledSlideTypes[0]?.typeKey || "type1",
+      page: intermediateSlides.length + 2,
+      type: firstEnabledType.typeKey,
       texte1: "",
       promptImage1: "",
     };
@@ -96,6 +117,7 @@ export default function Generator() {
     });
 
     setSlides(reindexed);
+    setHasUnsavedChanges(true);
   };
 
   const removeSlide = (index: number) => {
@@ -106,12 +128,14 @@ export default function Generator() {
       return { ...slide, page: idx + 1 };
     });
     setSlides(reindexed);
+    setHasUnsavedChanges(true);
   };
 
   const updateSlide = (index: number, field: string, value: string) => {
     const updated = [...slides];
     updated[index] = { ...updated[index], [field]: value };
     setSlides(updated);
+    setHasUnsavedChanges(true);
   };
 
   const handleGenerateDescription = async (slideIndex: number, promptField: string, textField: string) => {
@@ -172,6 +196,8 @@ export default function Generator() {
     });
     if (result.id) {
       setCarrouselId(result.id);
+      setHasUnsavedChanges(false);
+      initialSlidesRef.current = JSON.stringify(slides);
     }
   };
 
@@ -363,14 +389,68 @@ export default function Generator() {
   };
 
   const resetCarrousel = () => {
-    if (confirm("\u26a0\ufe0f \u00cates-vous s\u00fbr de vouloir r\u00e9initialiser le carrousel ? Toutes les donn\u00e9es non enregistr\u00e9es seront perdues.")) {
+    if (confirm("⚠️ Êtes-vous sûr de vouloir réinitialiser le carrousel ? Toutes les données non enregistrées seront perdues.")) {
       setSlides([
         { page: 1, type: "Titre", thematique: "", titre: "" },
         { page: 10, type: "Finale", expert: "", expertise: "", url: "" },
       ]);
       setCarrouselId(null);
-      toast.success("✅ Carrousel r\u00e9initialis\u00e9");
+      setHasUnsavedChanges(false);
+      initialSlidesRef.current = JSON.stringify([
+        { page: 1, type: "Titre", thematique: "", titre: "" },
+        { page: 10, type: "Finale", expert: "", expertise: "", url: "" },
+      ]);
+      toast.success("✅ Carrousel réinitialisé");
     }
+  };
+
+  // Bloquer la navigation si des modifications non sauvegardées existent
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges]);
+
+  // Intercepter la navigation interne (wouter)
+  useEffect(() => {
+    if (!hasUnsavedChanges) return;
+
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest('a[href]');
+      
+      if (link && hasUnsavedChanges) {
+        const href = link.getAttribute('href');
+        if (href && !href.startsWith('#') && href !== '/') {
+          e.preventDefault();
+          setPendingNavigation(href);
+          setShowExitDialog(true);
+        }
+      }
+    };
+
+    document.addEventListener('click', handleClick, true);
+    return () => document.removeEventListener('click', handleClick, true);
+  }, [hasUnsavedChanges]);
+
+  const handleConfirmExit = () => {
+    setHasUnsavedChanges(false);
+    setShowExitDialog(false);
+    if (pendingNavigation) {
+      navigate(pendingNavigation);
+      setPendingNavigation(null);
+    }
+  };
+
+  const handleCancelExit = () => {
+    setShowExitDialog(false);
+    setPendingNavigation(null);
   };
 
   const renderSlideForm = (slide: Slide, index: number) => {
@@ -771,6 +851,23 @@ export default function Generator() {
           ))}
         </div>
       </div>
+
+      <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>⚠️ Modifications non sauvegardées</AlertDialogTitle>
+            <AlertDialogDescription>
+              Vous avez des modifications non sauvegardées dans votre carrousel. Si vous quittez maintenant, ces modifications seront perdues.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleCancelExit}>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmExit} className="bg-destructive hover:bg-destructive/90">
+              Quitter sans sauvegarder
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 }
