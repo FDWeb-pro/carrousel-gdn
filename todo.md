@@ -159,3 +159,13 @@
 ## Améliorations de la Configuration des Types de Slides
 - [x] Ajouter une barre de recherche
 - [x] Ajouter des filtres (par statut actif/inactif, par type)
+
+
+## Fonctionnalité IA - Génération de descriptions d'images
+- [x] Ajouter une table aiConfig dans le schéma de base de données pour stocker les clés API
+- [x] Créer une page AdminAIConfig pour la configuration de l'API Infomaniak (super_admin uniquement)
+- [x] Ajouter des fonctions backend pour gérer la configuration IA
+- [x] Intégrer l'API Infomaniak pour la génération de descriptions
+- [x] Ajouter des boutons "Générer description d'image" dans le générateur à côté de chaque prompt image
+- [x] Implémenter la logique de génération basée sur le contenu texte de la slide
+- [x] Ajouter le menu "Configuration IA" dans la navigation (super_admin uniquement)

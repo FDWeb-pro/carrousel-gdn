@@ -584,6 +584,107 @@ export const appRouter = router({
       return { success: true };
     }),
   }),
+
+  // AI Configuration (super_admin only)
+  ai: router({
+    getConfig: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).query(async () => {
+      return db.getAiConfig();
+    }),
+
+    updateConfig: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).input(z.object({
+      apiToken: z.string().optional(),
+      productId: z.string().optional(),
+      model: z.string().optional(),
+      maxTokens: z.number().optional(),
+      temperature: z.number().optional(),
+      isEnabled: z.number().optional(),
+    })).mutation(async ({ input, ctx }) => {
+      await db.upsertAiConfig(input);
+      
+      // Log this action
+      await db.createAuditLog({
+        userId: ctx.user.id,
+        userName: ctx.user.name || 'Utilisateur inconnu',
+        action: 'update_ai_config',
+        entityType: 'ai_config',
+        entityId: null,
+        details: JSON.stringify({ updatedFields: Object.keys(input) }),
+      });
+      
+      return { success: true };
+    }),
+
+    generateImageDescription: protectedProcedure.input(z.object({
+      textContent: z.string(),
+    })).mutation(async ({ input }) => {
+      const config = await db.getAiConfig();
+      
+      if (!config || !config.isEnabled || !config.apiToken || !config.productId) {
+        throw new TRPCError({ 
+          code: 'PRECONDITION_FAILED', 
+          message: 'La configuration IA n\'est pas activée ou incomplète' 
+        });
+      }
+
+      try {
+        const response = await fetch(
+          `https://api.infomaniak.com/1/ai/${config.productId}/openai/chat/completions`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${config.apiToken}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              messages: [
+                {
+                  role: 'system',
+                  content: 'Tu es un expert en génération de prompts pour créer des images. Tu dois créer des descriptions détaillées et visuelles pour un générateur d\'images IA, basées sur le contenu textuel fourni. Réponds uniquement avec la description de l\'image, sans introduction ni explication.'
+                },
+                {
+                  role: 'user',
+                  content: `Crée une description détaillée d'image (prompt) pour illustrer visuellement ce contenu de slide : "${input.textContent}"`
+                }
+              ],
+              model: config.model || 'mixtral',
+              max_tokens: config.maxTokens || 200,
+              temperature: (config.temperature || 70) / 100,
+              profile_type: 'creative'
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`API Infomaniak error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const description = data.choices?.[0]?.message?.content;
+
+        if (!description) {
+          throw new Error('No description generated');
+        }
+
+        return { description };
+      } catch (error: any) {
+        console.error('Error calling Infomaniak API:', error);
+        throw new TRPCError({ 
+          code: 'INTERNAL_SERVER_ERROR', 
+          message: `Erreur lors de la génération: ${error.message}` 
+        });
+      }
+    }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

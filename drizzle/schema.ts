@@ -112,3 +112,21 @@ export const auditLog = mysqlTable("auditLog", {
 
 export type AuditLog = typeof auditLog.$inferSelect;
 export type InsertAuditLog = typeof auditLog.$inferInsert;
+
+/**
+ * Configuration IA pour la génération de descriptions d'images
+ */
+export const aiConfig = mysqlTable("ai_config", {
+  id: int("id").autoincrement().primaryKey(),
+  apiToken: varchar("apiToken", { length: 500 }),
+  productId: varchar("productId", { length: 100 }),
+  model: varchar("model", { length: 50 }).default("mixtral"),
+  maxTokens: int("maxTokens").default(200),
+  temperature: int("temperature").default(70), // Stored as integer (0.7 * 100)
+  isEnabled: int("isEnabled").default(0).notNull(), // 0 = désactivé, 1 = activé
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AiConfig = typeof aiConfig.$inferSelect;
+export type InsertAiConfig = typeof aiConfig.$inferInsert;

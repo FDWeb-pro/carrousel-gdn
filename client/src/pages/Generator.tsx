@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Download, Loader2, Mail, Plus, RotateCcw, Save, Trash2 } from "lucide-react";
+import { Download, Loader2, Mail, Plus, RotateCcw, Save, Sparkles, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
@@ -56,6 +56,18 @@ export default function Generator() {
     { page: 10, type: "Finale", expert: "", expertise: "", url: "" },
   ]);
   const [carrouselId, setCarrouselId] = useState<number | null>(null);
+  const [generatingPrompt, setGeneratingPrompt] = useState<string | null>(null);
+
+  const generateDescriptionMutation = trpc.ai.generateImageDescription.useMutation({
+    onSuccess: (data, variables) => {
+      toast.success("Description générée avec succès");
+      setGeneratingPrompt(null);
+    },
+    onError: (error: { message: string }) => {
+      toast.error(error.message || "Erreur lors de la génération");
+      setGeneratingPrompt(null);
+    },
+  });
 
   const enabledSlideTypes = slideTypesConfig?.filter((t) => t.isActive === "true" && t.typeKey !== "titre" && t.typeKey !== "finale") || [];
 
@@ -100,6 +112,25 @@ export default function Generator() {
     const updated = [...slides];
     updated[index] = { ...updated[index], [field]: value };
     setSlides(updated);
+  };
+
+  const handleGenerateDescription = async (slideIndex: number, promptField: string, textField: string) => {
+    const slide = slides[slideIndex];
+    const textContent = slide[textField as keyof Slide] as string;
+
+    if (!textContent || textContent.trim() === "") {
+      toast.error("Veuillez d'abord remplir le champ texte correspondant");
+      return;
+    }
+
+    setGeneratingPrompt(`${slideIndex}-${promptField}`);
+
+    try {
+      const result = await generateDescriptionMutation.mutateAsync({ textContent });
+      updateSlide(slideIndex, promptField, result.description);
+    } catch (error) {
+      // Error handled by mutation
+    }
   };
 
   const getCharLimit = (type: string) => {
@@ -510,31 +541,99 @@ export default function Generator() {
               </div>
               <div>
                 <Label>Prompt Image 1</Label>
-                <Input
-                  value={slide.promptImage1 || ""}
-                  onChange={(e) => updateSlide(index, "promptImage1", e.target.value)}
-                />
+                <div className="flex gap-2">
+                  <Input
+                    value={slide.promptImage1 || ""}
+                    onChange={(e) => updateSlide(index, "promptImage1", e.target.value)}
+                    placeholder="Description de l'image à générer"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleGenerateDescription(index, "promptImage1", "texte1")}
+                    disabled={generatingPrompt === `${index}-promptImage1`}
+                    title="Générer une description avec l'IA"
+                  >
+                    {generatingPrompt === `${index}-promptImage1` ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
               <div>
                 <Label>Prompt Image 2</Label>
-                <Input
-                  value={slide.promptImage2 || ""}
-                  onChange={(e) => updateSlide(index, "promptImage2", e.target.value)}
-                />
+                <div className="flex gap-2">
+                  <Input
+                    value={slide.promptImage2 || ""}
+                    onChange={(e) => updateSlide(index, "promptImage2", e.target.value)}
+                    placeholder="Description de l'image à générer"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleGenerateDescription(index, "promptImage2", "texte2")}
+                    disabled={generatingPrompt === `${index}-promptImage2`}
+                    title="Générer une description avec l'IA"
+                  >
+                    {generatingPrompt === `${index}-promptImage2` ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
               <div>
                 <Label>Prompt Image 3</Label>
-                <Input
-                  value={slide.promptImage3 || ""}
-                  onChange={(e) => updateSlide(index, "promptImage3", e.target.value)}
-                />
+                <div className="flex gap-2">
+                  <Input
+                    value={slide.promptImage3 || ""}
+                    onChange={(e) => updateSlide(index, "promptImage3", e.target.value)}
+                    placeholder="Description de l'image à générer"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleGenerateDescription(index, "promptImage3", "texte3")}
+                    disabled={generatingPrompt === `${index}-promptImage3`}
+                    title="Générer une description avec l'IA"
+                  >
+                    {generatingPrompt === `${index}-promptImage3` ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
               <div>
                 <Label>Prompt Image 4</Label>
-                <Input
-                  value={slide.promptImage4 || ""}
-                  onChange={(e) => updateSlide(index, "promptImage4", e.target.value)}
-                />
+                <div className="flex gap-2">
+                  <Input
+                    value={slide.promptImage4 || ""}
+                    onChange={(e) => updateSlide(index, "promptImage4", e.target.value)}
+                    placeholder="Description de l'image à générer"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleGenerateDescription(index, "promptImage4", "texte4")}
+                    disabled={generatingPrompt === `${index}-promptImage4`}
+                    title="Générer une description avec l'IA"
+                  >
+                    {generatingPrompt === `${index}-promptImage4` ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
             </>
           ) : slide.type === "type4" ? (
@@ -574,11 +673,27 @@ export default function Generator() {
               {(slide.type === "type2" || slide.type === "type3") && (
                 <div>
                   <Label>Prompt Image</Label>
-                  <Input
-                    value={slide.promptImage1 || ""}
-                    onChange={(e) => updateSlide(index, "promptImage1", e.target.value)}
-                    placeholder="Description de l'image à générer"
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      value={slide.promptImage1 || ""}
+                      onChange={(e) => updateSlide(index, "promptImage1", e.target.value)}
+                      placeholder="Description de l'image à générer"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleGenerateDescription(index, "promptImage1", "texte1")}
+                      disabled={generatingPrompt === `${index}-promptImage1`}
+                      title="Générer une description avec l'IA"
+                    >
+                      {generatingPrompt === `${index}-promptImage1` ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Sparkles className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
               )}
             </>

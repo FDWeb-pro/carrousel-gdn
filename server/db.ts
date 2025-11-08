@@ -1,6 +1,6 @@
 import { eq, desc, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { carrousels, InsertCarrousel, InsertSlideTypeConfig, InsertUser, slideTypesConfig, users, smtpConfig, InsertSmtpConfig, notifications, InsertNotification, auditLog, InsertAuditLog } from "../drizzle/schema";
+import { carrousels, InsertCarrousel, InsertSlideTypeConfig, InsertUser, slideTypesConfig, users, smtpConfig, InsertSmtpConfig, notifications, InsertNotification, auditLog, InsertAuditLog, aiConfig, InsertAiConfig } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -342,6 +342,27 @@ export async function clearAuditLogs() {
   const db = await getDb();
   if (!db) throw new Error('Database not available');
   await db.delete(auditLog);
+}
+
+// AI Configuration queries
+export async function getAiConfig() {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(aiConfig).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function upsertAiConfig(config: Partial<InsertAiConfig>) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const existing = await getAiConfig();
+  
+  if (existing) {
+    await db.update(aiConfig).set(config).where(eq(aiConfig.id, existing.id));
+  } else {
+    await db.insert(aiConfig).values(config as InsertAiConfig);
+  }
 }
 
 // Helper: Get all admins for notifications

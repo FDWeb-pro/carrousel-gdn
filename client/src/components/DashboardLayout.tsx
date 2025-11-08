@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/sidebar";
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { FileText, History, LayoutDashboard, LogOut, Mail, PanelLeft, Settings, Shield, Users } from "lucide-react";
+import { FileText, History, LayoutDashboard, LogOut, Mail, PanelLeft, Settings, Shield, Sparkles, Users } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -35,6 +35,7 @@ const menuItems = [
   { icon: Users, label: "Utilisateurs", path: "/admin/users", roles: ['admin', 'super_admin'] },
   { icon: Settings, label: "Types de Slides", path: "/admin/slide-types", roles: ['admin', 'super_admin'] },
   { icon: Mail, label: "Configuration SMTP", path: "/admin/smtp", roles: ['super_admin'] },
+  { icon: Sparkles, label: "Configuration IA", path: "/admin/ai-config", roles: ['super_admin'] },
   { icon: Shield, label: "Historique d'audit", path: "/admin/audit", roles: ['admin', 'super_admin'] },
 ];
 
