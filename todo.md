@@ -190,3 +190,9 @@
 - [x] Détecter les modifications non sauvegardées dans le générateur
 - [x] Afficher une confirmation avant de quitter la page si des modifications existent
 - [x] Bloquer la navigation avec beforeunload pour les fermetures de fenêtre/onglet
+
+
+## Correction système d'avertissement
+- [x] Diagnostiquer pourquoi le système d'avertissement ne s'affiche pas
+- [x] Corriger la logique d'interception de navigation
+- [x] Simplifier le système pour qu'il fonctionne avec DashboardLayout

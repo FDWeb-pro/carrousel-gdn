@@ -46,8 +46,10 @@ const MAX_WIDTH = 480;
 
 export default function DashboardLayout({
   children,
+  onBeforeNavigate,
 }: {
   children: React.ReactNode;
+  onBeforeNavigate?: (targetPath: string) => boolean;
 }) {
   const [sidebarWidth, setSidebarWidth] = useState(() => {
     const saved = localStorage.getItem(SIDEBAR_WIDTH_KEY);
@@ -106,7 +108,7 @@ export default function DashboardLayout({
         } as CSSProperties
       }
     >
-      <DashboardLayoutContent setSidebarWidth={setSidebarWidth}>
+      <DashboardLayoutContent setSidebarWidth={setSidebarWidth} onBeforeNavigate={onBeforeNavigate}>
         {children}
       </DashboardLayoutContent>
     </SidebarProvider>
@@ -116,11 +118,13 @@ export default function DashboardLayout({
 type DashboardLayoutContentProps = {
   children: React.ReactNode;
   setSidebarWidth: (width: number) => void;
+  onBeforeNavigate?: (targetPath: string) => boolean;
 };
 
 function DashboardLayoutContent({
   children,
   setSidebarWidth,
+  onBeforeNavigate,
 }: DashboardLayoutContentProps) {
   const { user, logout } = useAuth();
   const [location, setLocation] = useLocation();
@@ -226,7 +230,14 @@ function DashboardLayoutContent({
                   <SidebarMenuItem key={item.path}>
                     <SidebarMenuButton
                       isActive={isActive}
-                      onClick={() => setLocation(item.path)}
+                      onClick={() => {
+                        // Appeler le callback avant navigation si fourni
+                        if (onBeforeNavigate) {
+                          const canNavigate = onBeforeNavigate(item.path);
+                          if (!canNavigate) return;
+                        }
+                        setLocation(item.path);
+                      }}
                       tooltip={item.label}
                       className={`h-10 transition-all font-normal`}
                     >

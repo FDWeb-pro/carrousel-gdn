@@ -71,8 +71,7 @@ export default function Generator() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showExitDialog, setShowExitDialog] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
-  const [, navigate] = useLocation();
-  const initialSlidesRef = useRef(JSON.stringify(slides));
+  const [location, navigate] = useLocation();
 
   const generateDescriptionMutation = trpc.ai.generateImageDescription.useMutation({
     onSuccess: (data, variables) => {
@@ -197,7 +196,6 @@ export default function Generator() {
     if (result.id) {
       setCarrouselId(result.id);
       setHasUnsavedChanges(false);
-      initialSlidesRef.current = JSON.stringify(slides);
     }
   };
 
@@ -396,10 +394,6 @@ export default function Generator() {
       ]);
       setCarrouselId(null);
       setHasUnsavedChanges(false);
-      initialSlidesRef.current = JSON.stringify([
-        { page: 1, type: "Titre", thematique: "", titre: "" },
-        { page: 10, type: "Finale", expert: "", expertise: "", url: "" },
-      ]);
       toast.success("✅ Carrousel réinitialisé");
     }
   };
@@ -417,27 +411,15 @@ export default function Generator() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [hasUnsavedChanges]);
 
-  // Intercepter la navigation interne (wouter)
-  useEffect(() => {
-    if (!hasUnsavedChanges) return;
-
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const link = target.closest('a[href]');
-      
-      if (link && hasUnsavedChanges) {
-        const href = link.getAttribute('href');
-        if (href && !href.startsWith('#') && href !== '/') {
-          e.preventDefault();
-          setPendingNavigation(href);
-          setShowExitDialog(true);
-        }
-      }
-    };
-
-    document.addEventListener('click', handleClick, true);
-    return () => document.removeEventListener('click', handleClick, true);
-  }, [hasUnsavedChanges]);
+  // Fonction pour intercepter la navigation
+  const handleBeforeNavigate = (targetPath: string): boolean => {
+    if (hasUnsavedChanges && targetPath !== location) {
+      setPendingNavigation(targetPath);
+      setShowExitDialog(true);
+      return false; // Bloquer la navigation
+    }
+    return true; // Autoriser la navigation
+  };
 
   const handleConfirmExit = () => {
     setHasUnsavedChanges(false);
@@ -796,7 +778,7 @@ export default function Generator() {
   const intermediateCount = slides.filter((s) => s.page !== 1 && s.page !== 10).length;
 
   return (
-    <DashboardLayout>
+    <DashboardLayout onBeforeNavigate={handleBeforeNavigate}>
       {/* Barre d'actions fixe */}
       <div className="sticky top-0 z-50 bg-background border-b shadow-sm mb-6">
         <div className="container py-4">
