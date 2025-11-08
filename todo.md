@@ -196,3 +196,9 @@
 - [x] Diagnostiquer pourquoi le système d'avertissement ne s'affiche pas
 - [x] Corriger la logique d'interception de navigation
 - [x] Simplifier le système pour qu'il fonctionne avec DashboardLayout
+
+
+## Fonctionnalité de duplication de carrousels
+- [x] Ajouter un bouton "Dupliquer" dans la page Historique
+- [x] Créer la logique pour charger un carrousel dupliqué dans le générateur
+- [x] Réinitialiser l'ID du carrousel pour créer une nouvelle copie

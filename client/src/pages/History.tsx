@@ -21,8 +21,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc";
-import { Download, FileArchive, Loader2, Mail, Search, Trash2, X } from "lucide-react";
+import { Copy, Download, FileArchive, Loader2, Mail, Search, Trash2, X } from "lucide-react";
 import { useState, useMemo } from "react";
+import { useLocation } from "wouter";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import JSZip from "jszip";
@@ -30,6 +31,7 @@ import JSZip from "jszip";
 export default function History() {
   const { user } = useAuth();
   const utils = trpc.useUtils();
+  const [, setLocation] = useLocation();
   const { data: carrousels, isLoading } = trpc.carrousels.list.useQuery();
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -340,6 +342,18 @@ export default function History() {
     }
   };
 
+  const handleDuplicate = (carrousel: any) => {
+    // Encoder les données du carrousel en base64 pour les passer via l'URL
+    const duplicateData = {
+      thematique: carrousel.thematique,
+      titre: carrousel.titre,
+      slides: carrousel.slides
+    };
+    const encodedData = btoa(encodeURIComponent(JSON.stringify(duplicateData)));
+    setLocation(`/?duplicate=${encodedData}`);
+    toast.success("📋 Carrousel dupliqué - modifiez-le et enregistrez");
+  };
+
   const handleDownload = (carrousel: any) => {
     const buffer = generateExcelBuffer(carrousel);
     const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
@@ -506,6 +520,14 @@ export default function History() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex gap-2 justify-end">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDuplicate(carrousel)}
+                            title="Dupliquer ce carrousel"
+                          >
+                            <Copy className="w-4 h-4" />
+                          </Button>
                           <Button
                             variant="outline"
                             size="sm"

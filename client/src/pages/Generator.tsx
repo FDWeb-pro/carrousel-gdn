@@ -73,6 +73,30 @@ export default function Generator() {
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
   const [location, navigate] = useLocation();
 
+  // Détecter et charger les données de duplication depuis l'URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const duplicateParam = params.get('duplicate');
+    
+    if (duplicateParam) {
+      try {
+        const decodedData = JSON.parse(decodeURIComponent(atob(duplicateParam)));
+        const parsedSlides = JSON.parse(decodedData.slides);
+        
+        // Charger les slides dupliquées
+        setSlides(parsedSlides);
+        setCarrouselId(null); // Réinitialiser l'ID pour créer un nouveau carrousel
+        setHasUnsavedChanges(true); // Marquer comme modifié pour encourager la sauvegarde
+        
+        // Nettoyer l'URL
+        window.history.replaceState({}, '', '/');
+      } catch (error) {
+        console.error('Erreur lors du chargement des données de duplication:', error);
+        toast.error('Erreur lors de la duplication du carrousel');
+      }
+    }
+  }, []);
+
   const generateDescriptionMutation = trpc.ai.generateImageDescription.useMutation({
     onSuccess: (data, variables) => {
       toast.success("Description générée avec succès");
