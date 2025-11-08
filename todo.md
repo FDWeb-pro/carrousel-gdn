@@ -138,3 +138,24 @@
 
 ## Correction sélecteur de slides
 - [x] Filtrer les types "titre" et "finale" du sélecteur de type de slide dans le générateur
+
+
+## Améliorations avancées de l'Historique
+- [x] Ajouter des cases à cocher pour la sélection multiple de carrousels
+- [x] Implémenter la suppression groupée avec confirmation
+- [x] Implémenter le téléchargement groupé en ZIP
+- [x] Ajouter des filtres (par thématique, date, auteur)
+- [x] Ajouter une barre de recherche
+
+## Améliorations avancées de la Gestion des Utilisateurs
+- [x] Ajouter des filtres (par rôle, statut, nom, email)
+- [x] Ajouter une barre de recherche
+- [x] Ajouter des cases à cocher pour la sélection multiple
+- [x] Implémenter la suppression groupée avec confirmation
+- [x] Ajouter un statut "bloqué" dans le schéma de base de données
+- [x] Implémenter la suppression en cascade des données liées (carrousels, notifications, logs)
+- [x] Ajouter un bouton "Bloquer/Débloquer" pour empêcher la connexion sans supprimer
+
+## Améliorations de la Configuration des Types de Slides
+- [x] Ajouter une barre de recherche
+- [x] Ajouter des filtres (par statut actif/inactif, par type)

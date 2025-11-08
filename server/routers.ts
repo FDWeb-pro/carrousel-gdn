@@ -153,6 +153,75 @@ export const appRouter = router({
     }).query(async () => {
       return db.getPendingUsers();
     }),
+
+    block: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).input(z.object({
+      userId: z.number(),
+    })).mutation(async ({ input, ctx }) => {
+      // Get the target user
+      const targetUser = await db.getUserById(input.userId);
+      if (!targetUser) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Utilisateur non trouvé' });
+      }
+
+      // Admins cannot block super_admin
+      if (ctx.user.role === 'admin' && targetUser.role === 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Les administrateurs ne peuvent pas bloquer des super administrateurs' });
+      }
+
+      // Cannot block yourself
+      if (input.userId === ctx.user.id) {
+        throw new TRPCError({ code: 'BAD_REQUEST', message: 'Vous ne pouvez pas bloquer votre propre compte' });
+      }
+
+      await db.blockUser(input.userId);
+      
+      // Create audit log
+      await db.createAuditLog({
+        userId: ctx.user.id,
+        userName: ctx.user.name || ctx.user.email || 'Unknown',
+        action: 'block_user',
+        entityType: 'user',
+        entityId: input.userId,
+        details: JSON.stringify({ 
+          blockedUserName: targetUser.name || targetUser.email || 'Unknown',
+          blockedUserEmail: targetUser.email 
+        }),
+      });
+      
+      return { success: true };
+    }),
+
+    unblock: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).input(z.object({
+      userId: z.number(),
+    })).mutation(async ({ input, ctx }) => {
+      const targetUser = await db.getUserById(input.userId);
+      await db.unblockUser(input.userId);
+      
+      // Create audit log
+      await db.createAuditLog({
+        userId: ctx.user.id,
+        userName: ctx.user.name || ctx.user.email || 'Unknown',
+        action: 'unblock_user',
+        entityType: 'user',
+        entityId: input.userId,
+        details: JSON.stringify({ 
+          unblockedUserName: targetUser?.name || targetUser?.email || 'Unknown',
+          unblockedUserEmail: targetUser?.email 
+        }),
+      });
+      
+      return { success: true };
+    }),
   }),
 
   // Carrousel routes

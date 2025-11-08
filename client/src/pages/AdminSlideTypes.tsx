@@ -14,9 +14,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc";
-import { Image, Loader2, Plus, Save, Trash2, Upload } from "lucide-react";
-import { useState, useRef } from "react";
+import { Image, Loader2, Plus, Save, Search, Trash2, Upload, X } from "lucide-react";
+import { useState, useRef, useMemo } from "react";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function AdminSlideTypes() {
   const utils = trpc.useUtils();
@@ -55,6 +62,32 @@ export default function AdminSlideTypes() {
   const [createForm, setCreateForm] = useState({ typeKey: "", label: "", charLimit: 0 });
   const [uploadingImage, setUploadingImage] = useState<string | null>(null);
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+
+  // Filtered slide types based on search and filters
+  const filteredSlideTypes = useMemo(() => {
+    if (!slideTypes) return [];
+    
+    return slideTypes.filter(st => {
+      // Search filter
+      const matchesSearch = searchTerm === "" || 
+        st.typeKey.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        st.label.toLowerCase().includes(searchTerm.toLowerCase());
+
+      // Status filter
+      const matchesStatus = filterStatus === "all" || 
+        (filterStatus === "active" && st.isActive === "true") ||
+        (filterStatus === "inactive" && st.isActive === "false");
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [slideTypes, searchTerm, filterStatus]);
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setFilterStatus("all");
+  };
 
   const createMutation = trpc.slideTypes.create.useMutation({
     onSuccess: () => {
@@ -215,11 +248,55 @@ export default function AdminSlideTypes() {
           </Dialog>
         </div>
 
+        {/* Filters */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Filtres et Recherche</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-2">
+                <Label>Rechercher</Label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Rechercher par type ou label..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label>Statut</Label>
+                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tous</SelectItem>
+                    <SelectItem value="active">Actifs</SelectItem>
+                    <SelectItem value="inactive">Inactifs</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            {(searchTerm || filterStatus !== "all") && (
+              <div className="mt-4">
+                <Button variant="ghost" size="sm" onClick={clearFilters}>
+                  <X className="w-4 h-4 mr-2" />
+                  Effacer les filtres
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle>Types de Slides</CardTitle>
             <CardDescription>
-              Configurez les limites de caractères, images et activez/désactivez les types
+              {filteredSlideTypes.length} type(s) trouvé(s) sur {slideTypes?.length || 0} au total
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -235,7 +312,7 @@ export default function AdminSlideTypes() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {slideTypes?.map((type) => (
+                {filteredSlideTypes.map((type) => (
                   <TableRow key={type.typeKey}>
                     <TableCell>
                       <div className="flex items-center gap-2">

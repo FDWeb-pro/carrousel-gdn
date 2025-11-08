@@ -166,9 +166,33 @@ export async function getPendingUsers() {
   return db.select().from(users).where(eq(users.status, 'pending')).orderBy(desc(users.createdAt));
 }
 
+export async function blockUser(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  await db.update(users).set({ status: 'blocked' }).where(eq(users.id, userId));
+}
+
+export async function unblockUser(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  await db.update(users).set({ status: 'approved' }).where(eq(users.id, userId));
+}
+
 export async function deleteUser(userId: number) {
   const db = await getDb();
   if (!db) throw new Error('Database not available');
+  
+  // Delete all related data in cascade
+  // 1. Delete user's carrousels
+  await db.delete(carrousels).where(eq(carrousels.userId, userId));
+  
+  // 2. Delete user's notifications
+  await db.delete(notifications).where(eq(notifications.userId, userId));
+  
+  // 3. Delete user's audit logs
+  await db.delete(auditLog).where(eq(auditLog.userId, userId));
+  
+  // 4. Finally delete the user
   await db.delete(users).where(eq(users.id, userId));
 }
 
