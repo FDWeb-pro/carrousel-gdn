@@ -134,3 +134,7 @@
 ## Corrections urgentes
 - [x] Ajouter les boutons d'export et remise à zéro dans la page Historique d'audit
 - [x] Vérifier et restaurer les 5 types de slides manquants dans la base de données
+
+
+## Correction sélecteur de slides
+- [x] Filtrer les types "titre" et "finale" du sélecteur de type de slide dans le générateur

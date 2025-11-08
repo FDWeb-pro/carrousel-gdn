@@ -57,7 +57,7 @@ export default function Generator() {
   ]);
   const [carrouselId, setCarrouselId] = useState<number | null>(null);
 
-  const enabledSlideTypes = slideTypesConfig?.filter((t) => t.isActive === "true") || [];
+  const enabledSlideTypes = slideTypesConfig?.filter((t) => t.isActive === "true" && t.typeKey !== "titre" && t.typeKey !== "finale") || [];
 
   const addSlide = () => {
     const intermediateSlides = slides.filter((s) => s.page !== 1 && s.page !== 10);
@@ -460,11 +460,13 @@ export default function Generator() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {enabledSlideTypes.map((type) => (
-                  <SelectItem key={type.typeKey} value={type.typeKey}>
-                    {type.label}
-                  </SelectItem>
-                ))}
+                {enabledSlideTypes
+                  .filter((type) => type.typeKey !== "titre" && type.typeKey !== "finale")
+                  .map((type) => (
+                    <SelectItem key={type.typeKey} value={type.typeKey}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>
