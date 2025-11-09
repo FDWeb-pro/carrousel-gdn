@@ -5,12 +5,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Sliders } from "lucide-react";
+import { ArrowLeft, Loader2, Sliders } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useLocation } from "wouter";
 
 export default function AdminSlideConfig() {
   const { user } = useAuth();
+  const [, setLocation] = useLocation();
   const [minSlides, setMinSlides] = useState(2);
   const [maxSlides, setMaxSlides] = useState(8);
 
@@ -76,6 +78,14 @@ export default function AdminSlideConfig() {
   return (
     <DashboardLayout>
       <div className="p-8 max-w-4xl mx-auto">
+        <Button
+          variant="ghost"
+          onClick={() => setLocation('/admin')}
+          className="mb-4"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Retour à l'Administration
+        </Button>
       <div className="mb-6">
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <Sliders className="w-8 h-8" />

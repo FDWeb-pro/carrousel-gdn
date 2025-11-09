@@ -6,12 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Building2, Loader2, Upload, X } from "lucide-react";
+import { ArrowLeft, Building2, Loader2, Upload, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useLocation } from "wouter";
 
 export default function AdminBrandConfig() {
   const { user } = useAuth();
+  const [, setLocation] = useLocation();
   const [organizationName, setOrganizationName] = useState("");
   const [description, setDescription] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
@@ -120,10 +122,17 @@ export default function AdminBrandConfig() {
   };
 
   if (!user || (user.role !== "admin" && user.role !== "super_admin")) {
-    return (
-      <DashboardLayout>
-        <div className="p-8">
-          <p className="text-destructive">Accès refusé. Seuls les administrateurs peuvent accéder à cette page.</p>
+   return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        <Button
+          variant="ghost"
+          onClick={() => setLocation('/admin')}
+          className="mb-4"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Retour à l'Administration
+        </Button>          <p className="text-destructive">Accès refusé. Seuls les administrateurs peuvent accéder à cette page.</p>
         </div>
       </DashboardLayout>
     );

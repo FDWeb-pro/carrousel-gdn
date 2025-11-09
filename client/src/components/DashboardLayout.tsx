@@ -21,7 +21,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { getLoginUrl } from "@/const";
+import { APP_LOGO, getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
 import { Building2, FileText, HelpCircle, History, LayoutDashboard, LogOut, Mail, PanelLeft, Settings, Shield, Sliders, Sparkles, User, Users, Wrench } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
@@ -34,14 +34,6 @@ const menuItems = [
   { icon: History, label: "Historique", path: "/history", roles: ['membre', 'admin', 'super_admin'] },
   { icon: HelpCircle, label: "Aide", path: "/help", roles: ['membre', 'admin', 'super_admin'] },
   { icon: Wrench, label: "Administration", path: "/admin", roles: ['admin', 'super_admin'] },
-  { icon: Users, label: "Utilisateurs", path: "/admin/users", roles: ['admin', 'super_admin'] },
-  { icon: Settings, label: "Types de Slides", path: "/admin/slide-types", roles: ['admin', 'super_admin'] },
-  { icon: Building2, label: "Paramètres de Marque", path: "/admin/brand-config", roles: ['admin', 'super_admin'] },
-  { icon: Sliders, label: "Configuration Slides", path: "/admin/slide-config", roles: ['admin', 'super_admin'] },
-  { icon: HelpCircle, label: "Gestion de l'Aide", path: "/admin/help", roles: ['admin', 'super_admin'] },
-  { icon: Mail, label: "Configuration SMTP", path: "/admin/smtp", roles: ['super_admin'] },
-  { icon: Sparkles, label: "Configuration IA", path: "/admin/ai-config", roles: ['super_admin'] },
-  { icon: Shield, label: "Historique d'audit", path: "/admin/audit", roles: ['admin', 'super_admin'] },
 ];
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";
@@ -64,7 +56,7 @@ export default function DashboardLayout({
   const { data: brandConfig } = trpc.brand.getConfig.useQuery();
   
   const appTitle = brandConfig?.organizationName || 'Générateur de Carrousels';
-  const appLogo = brandConfig?.logoUrl || '/logo.png';
+  const appLogo = brandConfig?.logoUrl || APP_LOGO;
 
   useEffect(() => {
     localStorage.setItem(SIDEBAR_WIDTH_KEY, sidebarWidth.toString());

@@ -13,9 +13,10 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { trpc } from "@/lib/trpc";
-import { AlertCircle, ExternalLink, Loader2, Save, Sparkles } from "lucide-react";
+import { ArrowLeft, AlertCircle, ExternalLink, Loader2, Save, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useLocation } from "wouter";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type Provider = "infomaniak" | "openai" | "mistral" | "claude" | "gemini";
@@ -55,6 +56,7 @@ const PROVIDER_INFO = {
 
 export default function AdminAIConfig() {
   const { user } = useAuth();
+  const [, setLocation] = useLocation();
   const utils = trpc.useUtils();
   const { data: config, isLoading } = trpc.ai.getConfig.useQuery();
   const updateMutation = trpc.ai.updateConfig.useMutation({
@@ -140,6 +142,14 @@ export default function AdminAIConfig() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        <Button
+          variant="ghost"
+          onClick={() => setLocation('/admin')}
+          className="mb-4"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Retour à l'Administration
+        </Button>
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">
             <Sparkles className="w-8 h-8 text-primary" />

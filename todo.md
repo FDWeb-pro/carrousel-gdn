@@ -263,3 +263,9 @@
 - [x] Afficher le logo personnalisé dans la page Générateur
 - [x] Créer une page tableau de bord admin regroupant tous les accès administration
 - [x] Ajouter un lien "Administration" dans le menu pour accéder au tableau de bord admin
+
+
+## Améliorations navigation et logo
+- [x] Afficher le logo de brandConfig en haut de la sidebar (au-dessus du titre)
+- [x] Simplifier le menu en retirant les pages admin individuelles (garder uniquement Générateur, Historique, Aide, Administration)
+- [x] Ajouter un bouton "Retour à l'Administration" en haut de chaque page admin

@@ -5,11 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Mail, Save } from "lucide-react";
+import { ArrowLeft, Loader2, Mail, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useLocation } from "wouter";
 
 export default function AdminSmtp() {
+  const [, setLocation] = useLocation();
   const { data: smtpConfig, isLoading } = trpc.smtp.get.useQuery();
   const updateMutation = trpc.smtp.update.useMutation({
     onSuccess: () => {
@@ -60,6 +62,14 @@ export default function AdminSmtp() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        <Button
+          variant="ghost"
+          onClick={() => setLocation('/admin')}
+          className="mb-4"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Retour à l'Administration
+        </Button>
         <div>
           <h1 className="text-3xl font-bold">Configuration SMTP</h1>
           <p className="text-muted-foreground mt-2">

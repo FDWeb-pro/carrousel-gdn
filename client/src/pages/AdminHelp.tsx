@@ -7,9 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { ExternalLink, FileText, HelpCircle, Link as LinkIcon, Loader2, Plus, Trash2, Upload } from "lucide-react";
+import { ArrowLeft, ExternalLink, FileText, HelpCircle, Link as LinkIcon, Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useLocation } from "wouter";
 import {
   Dialog,
   DialogContent,
@@ -22,6 +23,7 @@ import {
 
 export default function AdminHelp() {
   const { user } = useAuth();
+  const [, setLocation] = useLocation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [resourceType, setResourceType] = useState<"file" | "link" | "cgu">("link");
   const [title, setTitle] = useState("");
@@ -136,10 +138,17 @@ export default function AdminHelp() {
   };
 
   if (!user || (user.role !== "admin" && user.role !== "super_admin")) {
-    return (
-      <DashboardLayout>
-        <div className="p-8">
-          <p className="text-destructive">Accès refusé. Seuls les administrateurs peuvent accéder à cette page.</p>
+   return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        <Button
+          variant="ghost"
+          onClick={() => setLocation('/admin')}
+          className="mb-4"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Retour à l'Administration
+        </Button>          <p className="text-destructive">Accès refusé. Seuls les administrateurs peuvent accéder à cette page.</p>
         </div>
       </DashboardLayout>
     );

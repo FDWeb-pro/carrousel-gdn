@@ -14,9 +14,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc";
-import { Image, Loader2, Plus, Save, Search, Trash2, Upload, X } from "lucide-react";
+import { ArrowLeft, Image, Loader2, Plus, Save, Search, Trash2, Upload, X } from "lucide-react";
 import { useState, useRef, useMemo } from "react";
 import { toast } from "sonner";
+import { useLocation } from "wouter";
 import {
   Select,
   SelectContent,
@@ -26,6 +27,7 @@ import {
 } from "@/components/ui/select";
 
 export default function AdminSlideTypes() {
+  const [, setLocation] = useLocation();
   const utils = trpc.useUtils();
   const { data: slideTypes, isLoading } = trpc.slideTypes.list.useQuery();
   const upsertMutation = trpc.slideTypes.upsert.useMutation({
@@ -185,6 +187,14 @@ export default function AdminSlideTypes() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        <Button
+          variant="ghost"
+          onClick={() => setLocation('/admin')}
+          className="mb-4"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Retour à l'Administration
+        </Button>
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Configuration des Types de Slides</h1>

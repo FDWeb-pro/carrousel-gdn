@@ -11,8 +11,9 @@ import {
 } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
-import { Download, FileText, Loader2, Trash2 } from "lucide-react";
+import { ArrowLeft, Download, FileText, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useLocation } from "wouter";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +27,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export default function AdminAudit() {
+  const [, setLocation] = useLocation();
   const { data: auditLogs, isLoading } = trpc.audit.list.useQuery({ limit: 100 });
   const utils = trpc.useUtils();
   const clearAuditMutation = trpc.audit.clear.useMutation({
@@ -140,6 +142,14 @@ export default function AdminAudit() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        <Button
+          variant="ghost"
+          onClick={() => setLocation('/admin')}
+          className="mb-4"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Retour à l'Administration
+        </Button>
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Historique d'Audit</h1>

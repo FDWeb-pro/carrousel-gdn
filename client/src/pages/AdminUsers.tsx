@@ -22,12 +22,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc";
-import { Ban, CheckCircle, Loader2, Lock, Search, Shield, Trash2, Unlock, User, X, XCircle } from "lucide-react";
+import { ArrowLeft, Ban, CheckCircle, Loader2, Lock, Search, Shield, Trash2, Unlock, User, X, XCircle } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { useLocation } from "wouter";
 
 export default function AdminUsers() {
   const { user } = useAuth();
+  const [, setLocation] = useLocation();
   const utils = trpc.useUtils();
   const { data: users, isLoading } = trpc.users.list.useQuery();
   const { data: pendingUsers } = trpc.users.pending.useQuery();
@@ -252,6 +254,14 @@ export default function AdminUsers() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        <Button
+          variant="ghost"
+          onClick={() => setLocation('/admin')}
+          className="mb-4"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Retour à l'Administration
+        </Button>
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Gestion des Utilisateurs</h1>
