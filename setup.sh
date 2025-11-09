@@ -173,6 +173,17 @@ echo ""
 
 sudo pnpm build
 
+# Création de la base de données
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "  Création de la base de données"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+echo "📦 Création de la base de données ${DB_NAME}..."
+mysql -u "${DB_USER}" -p"${DB_PASSWORD}" -h "${MYSQL_HOST}" -P "${MYSQL_PORT}" -e "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+echo "✅ Base de données créée"
+
 # Migration de la base de données
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
