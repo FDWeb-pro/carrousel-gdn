@@ -880,11 +880,20 @@ export default function Generator() {
       </div>
 
       <div className="space-y-6 max-w-4xl mx-auto px-4">
-        <div>
-          <h1 className="text-3xl font-bold">Générateur de Carrousels</h1>
-          <p className="text-muted-foreground mt-2">
-            Créez votre carrousel pour {brandConfig?.organizationName || 'votre structure'}
-          </p>
+        <div className="flex items-center gap-4">
+          {brandConfig?.logoUrl && (
+            <img
+              src={brandConfig.logoUrl}
+              alt="Logo"
+              className="w-16 h-16 rounded-lg object-cover border"
+            />
+          )}
+          <div>
+            <h1 className="text-3xl font-bold">Générateur de Carrousels</h1>
+            <p className="text-muted-foreground mt-2">
+              Créez votre carrousel pour {brandConfig?.organizationName || 'votre structure'}
+            </p>
+          </div>
         </div>
 
         <div className="space-y-4">

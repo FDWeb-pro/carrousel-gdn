@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import DashboardLayout from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -54,22 +55,27 @@ export default function AdminSlideConfig() {
 
   if (!user || (user.role !== "admin" && user.role !== "super_admin")) {
     return (
-      <div className="p-8">
-        <p className="text-destructive">Accès refusé. Seuls les administrateurs peuvent accéder à cette page.</p>
-      </div>
+      <DashboardLayout>
+        <div className="p-8">
+          <p className="text-destructive">Accès refusé. Seuls les administrateurs peuvent accéder à cette page.</p>
+        </div>
+      </DashboardLayout>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="w-8 h-8 animate-spin" />
-      </div>
+      <DashboardLayout>
+        <div className="flex items-center justify-center p-8">
+          <Loader2 className="w-8 h-8 animate-spin" />
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <DashboardLayout>
+      <div className="p-8 max-w-4xl mx-auto">
       <div className="mb-6">
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <Sliders className="w-8 h-8" />
@@ -144,5 +150,6 @@ export default function AdminSlideConfig() {
         </CardContent>
       </Card>
     </div>
+    </DashboardLayout>
   );
 }

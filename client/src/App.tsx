@@ -15,6 +15,7 @@ import AdminAudit from "@/pages/AdminAudit";
 import AdminAIConfig from "@/pages/AdminAIConfig";
 import AdminBrandConfig from "@/pages/AdminBrandConfig";
 import AdminSlideConfig from "@/pages/AdminSlideConfig";
+import AdminDashboard from "@/pages/AdminDashboard";
 import Help from "@/pages/Help";
 import AdminHelp from "@/pages/AdminHelp";
 import PendingApproval from "./pages/PendingApproval";
@@ -61,6 +62,7 @@ function Router() {
       <Route path="/" component={() => <ProtectedRoute component={Generator} />} />
       <Route path="/profile" component={() => <ProtectedRoute component={UserProfile} />} />
       <Route path="/history" component={() => <ProtectedRoute component={History} />} />
+      <Route path="/admin" component={() => <ProtectedRoute component={AdminDashboard} adminOnly />} />
       <Route path="/admin/users" component={() => <ProtectedRoute component={AdminUsers} adminOnly />} />
       <Route path="/admin/slide-types" component={() => <ProtectedRoute component={AdminSlideTypes} adminOnly />} />
       <Route path="/admin/smtp" component={() => <ProtectedRoute component={AdminSmtp} adminOnly />} />

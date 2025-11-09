@@ -256,3 +256,10 @@
 - [x] Nettoyer le code des références Manus non essentielles
 - [ ] Adapter le générateur pour respecter le min/max slides configuré (à implémenter)
 - [ ] Adapter l'export Excel pour respecter le nombre de slides configuré (à implémenter)
+
+
+## Corrections interface et navigation
+- [x] Ajouter DashboardLayout aux pages AdminBrandConfig, AdminSlideConfig, Help et AdminHelp
+- [x] Afficher le logo personnalisé dans la page Générateur
+- [x] Créer une page tableau de bord admin regroupant tous les accès administration
+- [x] Ajouter un lien "Administration" dans le menu pour accéder au tableau de bord admin

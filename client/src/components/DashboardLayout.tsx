@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { Building2, FileText, HelpCircle, History, LayoutDashboard, LogOut, Mail, PanelLeft, Settings, Shield, Sliders, Sparkles, User, Users } from "lucide-react";
+import { Building2, FileText, HelpCircle, History, LayoutDashboard, LogOut, Mail, PanelLeft, Settings, Shield, Sliders, Sparkles, User, Users, Wrench } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -33,6 +33,7 @@ const menuItems = [
   { icon: FileText, label: "Générateur", path: "/", roles: ['membre', 'admin', 'super_admin'] },
   { icon: History, label: "Historique", path: "/history", roles: ['membre', 'admin', 'super_admin'] },
   { icon: HelpCircle, label: "Aide", path: "/help", roles: ['membre', 'admin', 'super_admin'] },
+  { icon: Wrench, label: "Administration", path: "/admin", roles: ['admin', 'super_admin'] },
   { icon: Users, label: "Utilisateurs", path: "/admin/users", roles: ['admin', 'super_admin'] },
   { icon: Settings, label: "Types de Slides", path: "/admin/slide-types", roles: ['admin', 'super_admin'] },
   { icon: Building2, label: "Paramètres de Marque", path: "/admin/brand-config", roles: ['admin', 'super_admin'] },
