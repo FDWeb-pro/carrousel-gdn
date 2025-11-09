@@ -156,7 +156,15 @@ export default function AdminHelp() {
 
   return (
     <DashboardLayout>
-      <div className="p-8 max-w-4xl mx-auto">
+      <div className="p-8">
+        <Button
+          variant="ghost"
+          onClick={() => setLocation('/admin')}
+          className="mb-4"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Retour à l'Administration
+        </Button>
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">

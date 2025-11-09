@@ -269,3 +269,10 @@
 - [x] Afficher le logo de brandConfig en haut de la sidebar (au-dessus du titre)
 - [x] Simplifier le menu en retirant les pages admin individuelles (garder uniquement Générateur, Historique, Aide, Administration)
 - [x] Ajouter un bouton "Retour à l'Administration" en haut de chaque page admin
+
+
+## Corrections affichage et mise en page
+- [x] Corriger l'affichage du logo configuré dans Paramètres de Marque dans la sidebar
+- [x] Ajuster la largeur de la page Aide pour utiliser toute la largeur disponible
+- [x] Vérifier que Configuration Slides, Gestion de l'aide et Paramètres de Marque ont le bouton retour
+- [x] Ajuster la largeur de Configuration Slides, Gestion de l'aide et Paramètres de Marque

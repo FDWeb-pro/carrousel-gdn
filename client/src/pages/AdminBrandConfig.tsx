@@ -72,24 +72,34 @@ export default function AdminBrandConfig() {
     }
   };
 
-  const handleUploadLogo = async () => {
-    if (!logoFile) return;
+  const handleUploadLogo = async (): Promise<string | null> => {
+    if (!logoFile) return null;
 
     setIsUploading(true);
     try {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64 = (reader.result as string).split(",")[1];
-        await uploadLogoMutation.mutateAsync({
-          fileName: logoFile.name,
-          fileData: base64,
-          mimeType: logoFile.type,
-        });
-        setIsUploading(false);
-      };
-      reader.readAsDataURL(logoFile);
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const result = (reader.result as string).split(",")[1];
+          resolve(result);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(logoFile);
+      });
+
+      const result = await uploadLogoMutation.mutateAsync({
+        fileName: logoFile.name,
+        fileData: base64,
+        mimeType: logoFile.type,
+      });
+      
+      // Mettre à jour logoUrl après l'upload réussi
+      setLogoUrl(result.url);
+      setIsUploading(false);
+      return result.url;
     } catch (error) {
       setIsUploading(false);
+      throw error;
     }
   };
 
@@ -110,15 +120,25 @@ export default function AdminBrandConfig() {
       return;
     }
 
-    if (logoFile) {
-      await handleUploadLogo();
-    }
+    try {
+      let finalLogoUrl = logoUrl;
+      
+      // Attendre que l'upload soit terminé avant de sauvegarder
+      if (logoFile) {
+        const uploadedUrl = await handleUploadLogo();
+        // Utiliser directement l'URL retournée par l'upload
+        finalLogoUrl = uploadedUrl || logoUrl;
+      }
 
-    await updateMutation.mutateAsync({
-      organizationName: organizationName.trim(),
-      description: description.trim(),
-      logoUrl: logoUrl || undefined,
-    });
+      // Maintenant finalLogoUrl est à jour, on peut sauvegarder
+      await updateMutation.mutateAsync({
+        organizationName: organizationName.trim(),
+        description: description.trim(),
+        logoUrl: finalLogoUrl || undefined,
+      });
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+    }
   };
 
   if (!user || (user.role !== "admin" && user.role !== "super_admin")) {
@@ -150,7 +170,15 @@ export default function AdminBrandConfig() {
 
   return (
     <DashboardLayout>
-      <div className="p-8 max-w-4xl mx-auto">
+      <div className="p-8">
+        <Button
+          variant="ghost"
+          onClick={() => setLocation('/admin')}
+          className="mb-4"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Retour à l'Administration
+        </Button>
       <div className="mb-6">
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <Building2 className="w-8 h-8" />

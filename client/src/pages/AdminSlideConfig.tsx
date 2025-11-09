@@ -77,7 +77,7 @@ export default function AdminSlideConfig() {
 
   return (
     <DashboardLayout>
-      <div className="p-8 max-w-4xl mx-auto">
+      <div className="p-8">
         <Button
           variant="ghost"
           onClick={() => setLocation('/admin')}
