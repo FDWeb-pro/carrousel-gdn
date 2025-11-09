@@ -5,7 +5,7 @@
 
 set -e
 
-REPO_URL="https://github.com/VOTRE_USERNAME/carrousel-gdn.git"
+REPO_URL="https://github.com/FDWeb-pro/carrousel-gdn.git"
 INSTALL_DIR="/opt/carrousel-gdn"
 
 echo "╔════════════════════════════════════════════════════════════╗"
