@@ -276,3 +276,8 @@
 - [x] Ajuster la largeur de la page Aide pour utiliser toute la largeur disponible
 - [x] Vérifier que Configuration Slides, Gestion de l'aide et Paramètres de Marque ont le bouton retour
 - [x] Ajuster la largeur de Configuration Slides, Gestion de l'aide et Paramètres de Marque
+
+
+## Mise à jour des documentations
+- [x] Mettre à jour la documentation utilisateur avec les nouvelles fonctionnalités (Aide, personnalisation)
+- [x] Mettre à jour la documentation administrateur avec le tableau de bord et toutes les pages de configuration

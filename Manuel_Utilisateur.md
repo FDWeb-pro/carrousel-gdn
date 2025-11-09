@@ -1,6 +1,6 @@
-# Manuel Utilisateur - Générateur de Carrousels GdN
+# Manuel Utilisateur - Générateur de Carrousels
 
-**Version 1.0 - Janvier 2025**
+**Version 2.0 - Novembre 2025**
 
 **Auteur : Manus AI**
 
@@ -15,29 +15,30 @@
 5. [Utilisation de l'intelligence artificielle](#utilisation-de-lintelligence-artificielle)
 6. [Enregistrement et export](#enregistrement-et-export)
 7. [Consultation de l'historique](#consultation-de-lhistorique)
-8. [Gestion du profil personnel](#gestion-du-profil-personnel)
-9. [Conseils et astuces](#conseils-et-astuces)
-10. [Foire aux questions](#foire-aux-questions)
+8. [Accès à l'aide et aux ressources](#accès-à-laide-et-aux-ressources)
+9. [Gestion du profil personnel](#gestion-du-profil-personnel)
+10. [Conseils et astuces](#conseils-et-astuces)
+11. [Foire aux questions](#foire-aux-questions)
 
 ---
 
 ## Introduction
 
-Le Générateur de Carrousels GdN est une application web conçue pour faciliter la création de carrousels de présentation destinés au Guichet du Numérique. Cette application vous permet de créer rapidement des présentations professionnelles en suivant une structure prédéfinie et en bénéficiant d'outils d'assistance intelligents.
+Le Générateur de Carrousels est une application web professionnelle conçue pour faciliter la création de carrousels de présentation. Cette application vous permet de créer rapidement des présentations visuelles en suivant une structure prédéfinie et en bénéficiant d'outils d'assistance intelligents. L'application est entièrement personnalisable par votre organisation pour refléter son identité visuelle et ses besoins spécifiques.
 
 ### Qu'est-ce qu'un carrousel ?
 
-Un carrousel est une présentation visuelle composée de plusieurs slides (diapositives) qui se succèdent pour transmettre un message, présenter un sujet, ou promouvoir une offre. Dans le contexte du Guichet du Numérique, les carrousels sont utilisés pour communiquer sur des thématiques liées à la transformation digitale, aux outils numériques, et aux services proposés.
+Un carrousel est une présentation visuelle composée de plusieurs slides (diapositives) qui se succèdent pour transmettre un message, présenter un sujet, ou promouvoir une offre. Les carrousels sont particulièrement efficaces pour communiquer sur des thématiques complexes de manière accessible et engageante, notamment dans le domaine de la transformation digitale et des services numériques.
 
 ### Structure d'un carrousel
 
-Chaque carrousel créé avec cette application suit une structure standardisée comprenant dix slides maximum. La première slide (slide titre) présente la thématique et le titre du carrousel. Les slides 2 à 9 sont des slides de contenu modulables que vous pouvez personnaliser selon vos besoins. La dernière slide (slide finale) présente l'expert et l'offre associée.
+Chaque carrousel créé avec cette application suit une structure standardisée garantissant une cohérence visuelle et éditoriale. La première slide (slide titre) présente la thématique et le titre du carrousel. Les slides intermédiaires (dont le nombre est configurable par votre administrateur) permettent de développer votre contenu selon différents formats. La dernière slide (slide finale) présente l'expert et l'offre associée.
 
-Cette structure garantit une cohérence visuelle et éditoriale entre tous les carrousels produits par le Guichet du Numérique.
+Le nombre de slides intermédiaires que vous pouvez ajouter est défini par votre administrateur dans la configuration de l'application. Ce paramètre garantit une longueur appropriée des carrousels selon les besoins de votre organisation.
 
 ### Public cible
 
-Ce manuel s'adresse à tous les utilisateurs de l'application, qu'ils soient débutants ou expérimentés dans la création de contenu numérique. Aucune compétence technique particulière n'est requise pour utiliser l'application.
+Ce manuel s'adresse à tous les utilisateurs de l'application, qu'ils soient débutants ou expérimentés dans la création de contenu numérique. Aucune compétence technique particulière n'est requise pour utiliser l'application. L'interface intuitive et les outils d'assistance vous guident à chaque étape du processus de création.
 
 ---
 
@@ -49,25 +50,27 @@ Cette section vous guide dans vos premiers pas sur l'application, de la connexio
 
 Pour accéder à l'application, rendez-vous sur l'URL qui vous a été communiquée par votre administrateur. Sur la page d'accueil, cliquez sur le bouton de connexion. L'authentification s'effectue via le système OAuth de Manus, qui prend en charge plusieurs fournisseurs d'identité.
 
-Vous pouvez vous connecter avec votre compte Google, Microsoft, ou tout autre fournisseur d'identité supporté par votre organisation. Sélectionnez le fournisseur de votre choix et suivez les instructions d'authentification.
-
-Lors de votre première connexion, un compte utilisateur est automatiquement créé pour vous dans l'application. Vous pouvez commencer à créer des carrousels immédiatement.
+Vous pouvez vous connecter avec votre compte Google, Microsoft, ou tout autre fournisseur d'identité supporté par votre organisation. Sélectionnez le fournisseur de votre choix et suivez les instructions d'authentification. Lors de votre première connexion, un compte utilisateur est automatiquement créé pour vous dans l'application.
 
 ### Découverte de l'interface
 
 Une fois connecté, vous arrivez sur la page du générateur de carrousels. L'interface est organisée de manière intuitive pour faciliter votre travail.
 
-**Menu de navigation** : Situé sur la gauche de l'écran, il vous permet d'accéder aux différentes sections de l'application. Les options disponibles sont : Générateur (création de carrousels), Historique (consultation de vos carrousels), et Mon Profil (modification de vos informations personnelles).
+**Logo et identité** : En haut du menu de navigation latéral, le logo de votre organisation s'affiche, accompagné du nom personnalisé de l'application. Cette personnalisation reflète l'identité de votre structure.
 
-**Zone de travail** : Au centre de l'écran, c'est ici que vous créez et modifiez vos carrousels. Chaque slide est représentée par une carte contenant tous les champs à remplir.
+**Menu de navigation** : Situé sur la gauche de l'écran, il vous permet d'accéder aux différentes sections de l'application. Les options disponibles sont : Générateur (création de carrousels), Historique (consultation de vos carrousels), Aide (accès aux ressources et documentation), et Administration (réservé aux administrateurs).
+
+**Zone de travail** : Au centre de l'écran, c'est ici que vous créez et modifiez vos carrousels. Chaque slide est représentée par une carte contenant tous les champs à remplir. Le logo de votre organisation apparaît également dans l'en-tête de la zone de travail.
 
 **Barre d'actions** : En haut de la zone de travail, elle affiche le compteur de slides et les boutons d'action principaux : Ajouter une slide, Enregistrer, Télécharger Excel, Envoyer et Télécharger, et Reset.
 
 **Menu utilisateur** : En bas du menu de navigation, votre nom et votre email sont affichés. Cliquez dessus pour accéder à votre profil ou vous déconnecter.
 
+**Footer** : En bas de chaque page, une mention de crédit indique l'auteur de l'application avec des liens vers les sites web associés.
+
 ### Navigation dans l'application
 
-Pour naviguer entre les différentes sections de l'application, utilisez le menu de navigation latéral. Cliquez sur "Générateur" pour créer un nouveau carrousel ou reprendre un travail en cours. Cliquez sur "Historique" pour consulter vos carrousels précédemment créés. Cliquez sur "Mon Profil" pour modifier vos informations personnelles.
+Pour naviguer entre les différentes sections de l'application, utilisez le menu de navigation latéral. Cliquez sur "Générateur" pour créer un nouveau carrousel ou reprendre un travail en cours. Cliquez sur "Historique" pour consulter vos carrousels précédemment créés. Cliquez sur "Aide" pour accéder aux ressources de documentation et d'assistance. Si vous êtes administrateur, cliquez sur "Administration" pour accéder aux paramètres de configuration.
 
 ---
 
@@ -81,15 +84,15 @@ Pour commencer à créer un carrousel, cliquez sur "Générateur" dans le menu d
 
 ### Remplissage de la slide titre
 
-La slide titre est la première slide de votre carrousel. Elle contient deux informations essentielles.
+La slide titre est la première slide de votre carrousel. Elle contient deux informations essentielles qui définissent le sujet et le contexte de votre présentation.
 
-**Thématique** : Ce champ permet de catégoriser votre carrousel. Commencez à taper pour voir apparaître des suggestions de thématiques déjà utilisées dans l'application. Vous pouvez sélectionner une thématique existante ou en créer une nouvelle en tapant un texte qui n'existe pas encore. Les thématiques facilitent la recherche et l'organisation des carrousels dans l'historique.
+**Thématique** : Ce champ permet de catégoriser votre carrousel. Commencez à taper pour voir apparaître des suggestions de thématiques déjà utilisées dans l'application. Vous pouvez sélectionner une thématique existante ou en créer une nouvelle en tapant un texte qui n'existe pas encore. Les thématiques facilitent la recherche et l'organisation des carrousels dans l'historique. Exemples de thématiques : Intelligence Artificielle, Transformation digitale, Cybersécurité, Marketing digital, etc.
 
-**Titre du carrousel** : Saisissez un titre accrocheur et descriptif pour votre carrousel. Ce titre sera affiché sur la première slide et servira à identifier votre carrousel dans l'historique.
+**Titre du carrousel** : Saisissez un titre accrocheur et descriptif pour votre carrousel. Ce titre sera affiché sur la première slide et servira à identifier votre carrousel dans l'historique. Un bon titre doit être concis, explicite et susciter l'intérêt. Exemple : "5 façons d'utiliser l'IA dans votre métier".
 
 ### Ajout de slides intermédiaires
 
-Entre la slide titre et la slide finale, vous pouvez ajouter jusqu'à huit slides intermédiaires pour développer votre contenu. Pour ajouter une slide, cliquez sur le bouton "Ajouter une slide" en haut de la page. Un compteur vous indique le nombre de slides actuellement présentes (par exemple "3/8" signifie que vous avez 3 slides intermédiaires sur les 8 possibles).
+Entre la slide titre et la slide finale, vous pouvez ajouter des slides intermédiaires pour développer votre contenu. Le nombre minimum et maximum de slides intermédiaires est défini par votre administrateur dans la configuration de l'application. Pour ajouter une slide, cliquez sur le bouton "Ajouter une slide" en haut de la page. Un compteur vous indique le nombre de slides actuellement présentes par rapport au maximum autorisé (par exemple "3/8" signifie que vous avez 3 slides intermédiaires sur les 8 possibles).
 
 Lorsque vous ajoutez une slide, un menu déroulant vous permet de choisir le type de slide parmi les types activés par votre administrateur. Les types disponibles peuvent inclure : Introduction, Texte simple, Liste à puces, Citation, et Chiffre clé. Chaque type de slide a une structure spécifique adaptée à différents types de contenu.
 
@@ -97,23 +100,23 @@ Lorsque vous ajoutez une slide, un menu déroulant vous permet de choisir le typ
 
 Pour chaque slide intermédiaire, remplissez les champs proposés selon le type de slide choisi. Les champs varient selon le type, mais incluent généralement des zones de texte et des champs pour les prompts d'images.
 
-**Zones de texte** : Saisissez votre contenu dans les zones de texte. Ces zones sont redimensionnables verticalement pour s'adapter à la longueur de votre texte.
+**Zones de texte** : Saisissez votre contenu dans les zones de texte. Ces zones sont redimensionnables verticalement pour s'adapter à la longueur de votre texte. Veillez à respecter les limites de caractères pour garantir un rendu optimal sur les slides.
 
-**Prompts d'images** : Les prompts d'images sont des descriptions textuelles qui seront utilisées pour générer ou rechercher des images appropriées. Vous pouvez saisir manuellement ces descriptions ou utiliser l'intelligence artificielle pour les générer automatiquement (voir section suivante).
+**Prompts d'images** : Les prompts d'images sont des descriptions textuelles qui seront utilisées pour générer ou rechercher des images appropriées. Vous pouvez saisir manuellement ces descriptions ou utiliser l'intelligence artificielle pour les générer automatiquement (voir section suivante). Un bon prompt d'image doit être précis, descriptif et en rapport avec le contenu de la slide.
 
 ### Remplissage de la slide finale
 
-La slide finale présente l'expert et l'offre associée au carrousel. Elle contient trois champs.
+La slide finale présente l'expert et l'offre associée au carrousel. Elle contient trois champs qui permettent aux lecteurs de vous identifier et de vous contacter.
 
-**Nom de l'expert** : Ce champ est automatiquement pré-rempli avec votre prénom et nom tels que définis dans votre profil. Vous pouvez le modifier si vous créez un carrousel pour quelqu'un d'autre.
+**Nom de l'expert** : Ce champ est automatiquement pré-rempli avec votre prénom et nom tels que définis dans votre profil. Vous pouvez le modifier si vous créez un carrousel pour quelqu'un d'autre ou si vous souhaitez utiliser un nom différent.
 
-**Expertise** : Ce champ est automatiquement pré-rempli avec votre fonction telle que définie dans votre profil. Vous pouvez le modifier selon le contexte du carrousel.
+**Expertise** : Ce champ est automatiquement pré-rempli avec votre fonction telle que définie dans votre profil. Vous pouvez le modifier selon le contexte du carrousel. Exemple : "Consultant en transformation digitale et formateur".
 
-**URL de l'offre** : Saisissez l'URL complète de la page web vers laquelle vous souhaitez diriger les lecteurs du carrousel. Cette URL sera affichée sur la slide finale.
+**URL de l'offre** : Saisissez l'URL complète de la page web vers laquelle vous souhaitez diriger les lecteurs du carrousel. Cette URL sera affichée sur la slide finale et doit pointer vers une page pertinente (votre site web, une page de contact, une offre spécifique, etc.).
 
 ### Modification de l'ordre des slides
 
-Les slides intermédiaires sont automatiquement numérotées de 2 à 9. Vous ne pouvez pas modifier manuellement l'ordre des slides, mais vous pouvez supprimer une slide et en recréer une nouvelle à la position souhaitée.
+Les slides intermédiaires sont automatiquement numérotées dans l'ordre de création. Vous ne pouvez pas modifier manuellement l'ordre des slides, mais vous pouvez supprimer une slide et en recréer une nouvelle à la position souhaitée.
 
 ### Suppression d'une slide
 
@@ -127,360 +130,268 @@ Chaque carte de slide affiche une miniature de prévisualisation en haut à droi
 
 ## Les différents types de slides
 
-L'application propose plusieurs types de slides intermédiaires, chacun adapté à un type de contenu spécifique. Cette section décrit en détail chaque type de slide disponible.
+L'application propose plusieurs types de slides intermédiaires, chacun adapté à un type de contenu spécifique. Les types disponibles sont configurés par votre administrateur. Cette section décrit en détail les types de slides les plus courants.
 
 ### Type 1 - Introduction
 
-La slide d'introduction est idéale pour présenter un sujet ou introduire une section de votre carrousel. Elle contient deux éléments principaux.
+La slide d'introduction est idéale pour présenter un sujet ou introduire une section de votre carrousel. Elle contient deux éléments principaux qui permettent de capter l'attention et de contextualiser le sujet.
 
-**Texte principal** : Une zone de texte pour votre contenu introductif. Ce texte peut être un paragraphe d'introduction, une question, ou une accroche pour capter l'attention.
+**Texte principal** : Une zone de texte pour votre contenu introductif. Ce texte peut être un paragraphe d'introduction, une question rhétorique, ou une accroche pour capter l'attention. Privilégiez un texte court et percutant.
 
-**Prompt image** : Une description de l'image d'accompagnement. Cette image doit être en rapport avec le sujet introduit.
+**Prompt image** : Une description de l'image d'accompagnement. Cette image doit être en rapport avec le sujet introduit et créer un impact visuel fort.
 
 ### Type 2 - Texte simple
 
-La slide de texte simple est le type le plus polyvalent. Elle permet de présenter n'importe quel contenu textuel accompagné d'une image.
+La slide de texte simple est le type le plus polyvalent. Elle permet de présenter n'importe quel contenu textuel accompagné d'une image illustrative.
 
-**Texte principal** : Une zone de texte pour votre contenu. Vous pouvez y placer un paragraphe explicatif, une description, ou tout autre texte.
+**Texte principal** : Une zone de texte pour votre contenu. Vous pouvez y placer un paragraphe explicatif, une description, ou tout autre texte. Ce type de slide est idéal pour développer un point, expliquer un concept, ou présenter une information.
 
-**Prompt image** : Une description de l'image d'accompagnement qui illustre ou complète votre texte.
+**Prompt image** : Une description de l'image d'accompagnement qui illustre ou complète votre texte. L'image doit renforcer le message textuel.
 
 ### Type 3 - Liste à puces
 
-La slide liste à puces est parfaite pour présenter des points clés, des étapes, ou des éléments énumérés.
+La slide liste à puces est parfaite pour présenter des points clés, des étapes, ou des éléments énumérés de manière claire et structurée.
 
-**Texte principal** : Une zone de texte où vous pouvez lister vos points. Séparez chaque point par un retour à la ligne ou utilisez des tirets pour structurer votre liste.
+**Texte principal** : Une zone de texte où vous pouvez lister vos points. Séparez chaque point par un retour à la ligne ou utilisez des tirets pour structurer votre liste. Limitez-vous à 3-5 points pour garantir la lisibilité.
 
-**Prompt image** : Une description de l'image d'accompagnement qui renforce visuellement votre liste.
+**Prompt image** : Une description de l'image d'accompagnement qui renforce visuellement votre liste et crée une cohérence visuelle.
 
 ### Type 4 - Citation
 
-La slide citation permet de mettre en avant une citation, un témoignage, ou une phrase marquante.
+La slide citation permet de mettre en avant une citation, un témoignage, ou une phrase marquante qui apporte de la crédibilité ou de l'émotion à votre présentation.
 
-**Citation** : Le texte de la citation à mettre en avant. Utilisez des guillemets si nécessaire.
+**Citation** : Le texte de la citation à mettre en avant. Utilisez des guillemets si nécessaire. La citation doit être pertinente et impactante.
 
-**Auteur** : Le nom de l'auteur de la citation ou la source du témoignage.
+**Auteur** : Le nom de l'auteur de la citation ou la source du témoignage. Indiquez le nom complet et éventuellement la fonction ou l'organisation de l'auteur.
 
 Ce type de slide n'inclut pas de prompt image car le focus est mis sur le texte de la citation.
 
 ### Type 5 - Chiffre clé
 
-La slide chiffre clé est conçue pour présenter des données chiffrées, des statistiques, ou des indicateurs clés. Elle contient quatre zones identiques, chacune composée de deux éléments.
+La slide chiffre clé est conçue pour présenter des données chiffrées, des statistiques, ou des indicateurs clés de manière visuelle et percutante. Elle contient quatre zones identiques, chacune composée de deux éléments.
 
-**Texte** : Un court texte décrivant le chiffre ou l'indicateur. Exemple : "Utilisateurs actifs", "Taux de satisfaction", "Économies réalisées".
+**Texte** : Un court texte décrivant le chiffre ou l'indicateur. Exemple : "Utilisateurs actifs", "Taux de satisfaction", "Économies réalisées". Soyez concis et précis.
 
-**Prompt image** : Une description d'une icône ou d'une image simple illustrant le chiffre. Les images doivent être simples et cohérentes entre elles pour un rendu harmonieux.
-
-Ce type de slide est particulièrement efficace pour présenter des résultats, des objectifs, ou des données comparatives.
-
-### Choix du type de slide approprié
-
-Pour choisir le type de slide le plus adapté à votre contenu, posez-vous les questions suivantes. Voulez-vous introduire un nouveau sujet ? Utilisez le type Introduction. Voulez-vous expliquer un concept ou décrire une situation ? Utilisez le type Texte simple. Voulez-vous énumérer des points, des étapes, ou des éléments ? Utilisez le type Liste à puces. Voulez-vous mettre en avant une citation ou un témoignage ? Utilisez le type Citation. Voulez-vous présenter des chiffres, des statistiques, ou des indicateurs ? Utilisez le type Chiffre clé.
+**Prompt image** : Une description d'une icône ou d'une image simple illustrant le chiffre. Les images doivent être simples, cohérentes entre elles et facilement identifiables pour un rendu harmonieux.
 
 ---
 
 ## Utilisation de l'intelligence artificielle
 
-Si votre administrateur a activé la fonctionnalité d'intelligence artificielle, vous pouvez bénéficier d'une assistance automatique pour générer des descriptions d'images pertinentes.
+L'application intègre des fonctionnalités d'intelligence artificielle pour vous assister dans la création de contenu. Ces outils vous font gagner du temps et vous aident à produire des carrousels de qualité professionnelle.
 
-### Disponibilité de la fonctionnalité
+### Génération automatique de prompts d'images
 
-La génération automatique de prompts d'images est une fonctionnalité optionnelle qui doit être configurée par votre administrateur. Si elle est activée, vous verrez apparaître des boutons "✨ Générer description" à côté de chaque champ "Prompt image" dans le générateur.
+Pour chaque champ "Prompt image" d'une slide, vous pouvez utiliser l'IA pour générer automatiquement une description d'image pertinente. Cliquez sur le bouton "Générer avec l'IA" (icône étoile) à côté du champ. L'IA analyse le contenu textuel de votre slide et génère une description d'image appropriée en quelques secondes.
 
-Si ces boutons ne sont pas visibles, cela signifie que la fonctionnalité n'est pas activée sur votre instance. Contactez votre administrateur si vous souhaitez en bénéficier.
+Cette fonctionnalité est particulièrement utile lorsque vous avez du mal à formuler une description d'image ou lorsque vous souhaitez gagner du temps. Vous pouvez toujours modifier le prompt généré pour l'affiner selon vos besoins.
 
-### Génération d'une description d'image
+### Génération de contenu complet
 
-Pour générer automatiquement une description d'image, suivez ces étapes.
+L'application propose également une fonctionnalité de génération de contenu complet pour les slides intermédiaires. Cliquez sur le bouton "Générer le contenu avec l'IA" en haut de la carte de la slide. L'IA génère automatiquement le texte principal et le prompt d'image en fonction du contexte de votre carrousel (thématique et titre).
 
-Remplissez d'abord le contenu textuel de votre slide. L'intelligence artificielle se base sur ce contenu pour générer une description d'image pertinente.
+Cette fonctionnalité est idéale pour démarrer rapidement la création d'une slide ou pour obtenir des idées de contenu. Le contenu généré peut ensuite être modifié et personnalisé selon vos besoins.
 
-Cliquez sur le bouton "✨ Générer description" à côté du champ "Prompt image" que vous souhaitez remplir.
+### Conseils d'utilisation de l'IA
 
-L'intelligence artificielle analyse le contenu de votre slide et génère une description d'image en quelques secondes. Le champ "Prompt image" est automatiquement rempli avec la description générée.
+L'intelligence artificielle est un outil d'assistance, pas un remplaçant de votre expertise. Utilisez les suggestions de l'IA comme point de départ et personnalisez toujours le contenu pour qu'il corresponde à votre message et à votre style. Vérifiez systématiquement la pertinence et l'exactitude du contenu généré avant de l'utiliser.
 
-Vous pouvez modifier la description générée si vous souhaitez l'ajuster ou la personnaliser.
-
-### Qualité des descriptions générées
-
-L'intelligence artificielle génère des descriptions d'images basées sur le contexte et le contenu de votre slide. Plus votre contenu textuel est précis et détaillé, plus la description d'image générée sera pertinente.
-
-Les descriptions générées sont conçues pour être utilisées avec des outils de recherche d'images ou de génération d'images par IA. Elles décrivent le type d'image, le style, les éléments à inclure, et l'ambiance souhaitée.
-
-### Modification des descriptions
-
-Les descriptions générées par l'IA sont des suggestions. Vous êtes libre de les modifier, de les compléter, ou de les remplacer entièrement selon vos besoins. Les champs "Prompt image" restent modifiables manuellement à tout moment.
-
-### Limites de l'IA
-
-L'intelligence artificielle est un outil d'assistance, pas un remplacement de votre créativité. Elle peut parfois générer des descriptions qui ne correspondent pas exactement à votre vision. Dans ce cas, n'hésitez pas à régénérer la description ou à la modifier manuellement.
+Pour obtenir les meilleurs résultats, assurez-vous que la thématique et le titre de votre carrousel sont bien définis avant d'utiliser la génération de contenu. Plus le contexte est clair, plus les suggestions de l'IA seront pertinentes.
 
 ---
 
 ## Enregistrement et export
 
-Une fois votre carrousel créé, vous disposez de plusieurs options pour l'enregistrer et l'exporter.
+Une fois votre carrousel créé, plusieurs options s'offrent à vous pour l'enregistrer et l'exporter dans différents formats.
 
 ### Enregistrement du carrousel
 
-Pour enregistrer votre carrousel dans l'application, cliquez sur le bouton "Enregistrer" en haut de la page. Votre carrousel est sauvegardé dans la base de données et apparaîtra dans votre historique personnel.
+Pour enregistrer votre carrousel en cours de création, cliquez sur le bouton "Enregistrer" en haut de la page. Le carrousel est automatiquement sauvegardé dans la base de données de l'application. Vous pouvez reprendre votre travail à tout moment en accédant au générateur.
 
-L'enregistrement est obligatoire avant de pouvoir télécharger ou envoyer votre carrousel. Si vous tentez de télécharger ou d'envoyer un carrousel non enregistré, l'application l'enregistrera automatiquement avant de procéder à l'export.
+L'application sauvegarde automatiquement votre travail à intervalles réguliers, mais il est recommandé de cliquer sur "Enregistrer" régulièrement pour éviter toute perte de données en cas de problème technique.
 
-### Téléchargement au format Excel
+### Export au format Excel
 
-Le bouton "Télécharger Excel" permet de télécharger votre carrousel au format Excel (.xlsx). Ce fichier contient toutes les informations de votre carrousel organisées dans un tableau structuré.
+Pour exporter votre carrousel au format Excel, cliquez sur le bouton "Télécharger Excel". Un fichier Excel est généré et téléchargé sur votre ordinateur. Ce fichier contient toutes les informations de votre carrousel organisées dans un tableau structuré.
 
-Le fichier Excel téléchargé contient les colonnes suivantes : Numéro de page, Type de slide (avec première lettre en majuscule), Thématique, Titre, Texte 1, Texte 2, Texte 3, Texte 4, Prompt Image 1, Prompt Image 2, Prompt Image 3, Prompt Image 4, Expert, Expertise, et URL.
-
-Ce format est conçu pour être facilement exploitable par d'autres outils ou pour être partagé avec des collaborateurs.
+Le fichier Excel est optimisé pour être utilisé avec des systèmes d'automatisation ou pour être partagé avec des collaborateurs. Chaque slide est représentée par une ligne dans le tableau, avec des colonnes pour le type de slide, le contenu textuel, et les prompts d'images. **Important** : Le fichier Excel généré ne contient plus de lignes vides entre la dernière slide remplie et la slide finale, garantissant ainsi une compatibilité optimale avec les outils d'automatisation.
 
 ### Envoi par email et téléchargement
 
-Le bouton "Envoyer et Télécharger" combine deux actions : il enregistre votre carrousel, génère le fichier Excel, l'envoie par email à l'adresse configurée par votre administrateur, et déclenche également le téléchargement du fichier sur votre ordinateur.
+Pour envoyer votre carrousel par email et télécharger simultanément le fichier Excel, cliquez sur le bouton "Envoyer et Télécharger". Le fichier Excel est envoyé à l'adresse email configurée par votre administrateur (généralement l'adresse de l'administrateur système) et téléchargé sur votre ordinateur.
 
-Cette fonctionnalité est particulièrement utile si vous souhaitez qu'une personne spécifique (par exemple, un responsable de publication) reçoive automatiquement vos carrousels dès leur création.
-
-**Note** : La fonctionnalité d'envoi par email doit être configurée par votre administrateur. Si elle n'est pas disponible, seul le téléchargement sera effectué.
+Cette fonctionnalité est utile pour archiver vos carrousels ou pour les transmettre automatiquement à une personne responsable de la validation ou de la publication.
 
 ### Réinitialisation du générateur
 
-Le bouton "Reset" permet de réinitialiser complètement le générateur et de repartir sur un carrousel vierge. Cette action supprime tout le contenu en cours mais ne supprime pas les carrousels déjà enregistrés dans votre historique.
-
-Une confirmation vous sera demandée avant la réinitialisation pour éviter les pertes de données accidentelles.
-
-### Protection contre la perte de données
-
-L'application intègre un système de protection contre la perte de données accidentelle. Si vous tentez de quitter la page du générateur alors que vous avez des modifications non enregistrées, un message d'avertissement vous demandera de confirmer votre action.
-
-Ce message apparaît dans deux situations : lorsque vous cliquez sur un lien du menu de navigation pour aller sur une autre page, et lorsque vous tentez de fermer l'onglet ou la fenêtre du navigateur.
-
-Pour éviter ce message, enregistrez toujours votre carrousel avant de quitter la page.
+Pour effacer complètement le carrousel en cours et recommencer à zéro, cliquez sur le bouton "Reset". Une confirmation vous sera demandée car cette action est irréversible. Le générateur est réinitialisé avec un nouveau carrousel vierge contenant uniquement les slides titre et finale.
 
 ---
 
 ## Consultation de l'historique
 
-L'historique vous permet de consulter, télécharger, et gérer tous les carrousels que vous avez créés.
+L'historique vous permet de consulter tous les carrousels que vous avez créés précédemment. Cette section vous explique comment naviguer dans l'historique et gérer vos carrousels.
 
 ### Accès à l'historique
 
-Pour accéder à votre historique, cliquez sur "Historique" dans le menu de navigation latéral. La page affiche un tableau listant tous vos carrousels avec leurs informations principales.
+Pour accéder à l'historique, cliquez sur "Historique" dans le menu de navigation latéral. La page affiche la liste de tous vos carrousels enregistrés, classés par date de création (du plus récent au plus ancien).
 
-### Informations affichées
+### Consultation d'un carrousel
 
-Pour chaque carrousel, l'historique affiche les informations suivantes.
-
-**Titre** : Le titre du carrousel tel que vous l'avez défini dans la slide titre.
-
-**Thématique** : La thématique du carrousel.
-
-**Date de création** : La date et l'heure de création du carrousel.
-
-**Actions disponibles** : Les boutons d'action pour télécharger, dupliquer, ou supprimer le carrousel.
+Chaque carrousel est représenté par une carte affichant le titre, la thématique, la date de création, et le nombre de slides. Pour consulter le détail d'un carrousel, cliquez sur sa carte. Les informations complètes du carrousel s'affichent, incluant le contenu de toutes les slides.
 
 ### Recherche et filtrage
 
-L'historique propose des outils de recherche et de filtrage pour faciliter la navigation dans vos carrousels.
-
-**Barre de recherche** : Située en haut de la page, elle permet de rechercher un carrousel par son titre ou sa thématique. La recherche s'effectue en temps réel au fur et à mesure de votre saisie.
-
-**Filtre par thématique** : Un menu déroulant permet de filtrer les carrousels par thématique. Seules les thématiques que vous avez utilisées apparaissent dans ce menu.
-
-**Filtre par période** : Un menu déroulant permet de filtrer les carrousels par date de création. Les options disponibles sont : Tous, Aujourd'hui, Cette semaine, Ce mois, et Cette année.
-
-### Téléchargement d'un carrousel
-
-Pour télécharger un carrousel depuis l'historique, cliquez sur le bouton "Télécharger" (icône de téléchargement) dans la ligne correspondante. Le fichier Excel est immédiatement téléchargé sur votre ordinateur.
-
-### Duplication d'un carrousel
-
-La fonction de duplication permet de créer une copie d'un carrousel existant pour le modifier. Cette fonctionnalité est très utile si vous souhaitez créer une variante d'un carrousel ou utiliser un carrousel existant comme modèle pour en créer un nouveau.
-
-Pour dupliquer un carrousel, cliquez sur le bouton "Dupliquer" (icône 📋) dans la ligne correspondante. Le générateur s'ouvre automatiquement avec toutes les données du carrousel dupliqué. Vous pouvez alors modifier le contenu selon vos besoins. N'oubliez pas d'enregistrer le nouveau carrousel une fois vos modifications terminées.
+Utilisez la barre de recherche en haut de la page pour rechercher un carrousel par son titre ou sa thématique. Vous pouvez également filtrer les carrousels par thématique en utilisant le menu déroulant de filtrage.
 
 ### Suppression d'un carrousel
 
-Pour supprimer un carrousel de votre historique, cliquez sur le bouton "Supprimer" (icône poubelle) dans la ligne correspondante. Une confirmation vous sera demandée pour éviter les suppressions accidentelles.
+Pour supprimer définitivement un carrousel de l'historique, cliquez sur le bouton "Supprimer" (icône poubelle) sur la carte du carrousel. Une confirmation vous sera demandée car cette action est irréversible. Seuls vos propres carrousels peuvent être supprimés. Les administrateurs peuvent supprimer tous les carrousels.
 
-**Attention** : La suppression d'un carrousel est définitive et irréversible. Assurez-vous de ne plus avoir besoin du carrousel avant de le supprimer.
+### Export depuis l'historique
 
-### Sélection multiple
+Depuis la page de détail d'un carrousel dans l'historique, vous pouvez exporter à nouveau le carrousel au format Excel en cliquant sur le bouton "Télécharger Excel". Cette fonctionnalité est utile si vous avez perdu le fichier Excel original ou si vous souhaitez le récupérer ultérieurement.
 
-Vous pouvez sélectionner plusieurs carrousels simultanément en cochant les cases à gauche de chaque ligne. Cette fonctionnalité permet d'effectuer des actions groupées.
+---
 
-**Suppression groupée** : Après avoir sélectionné plusieurs carrousels, cliquez sur le bouton "Supprimer la sélection" pour les supprimer tous en une seule opération. Une confirmation vous sera demandée.
+## Accès à l'aide et aux ressources
 
-**Téléchargement groupé** : Après avoir sélectionné plusieurs carrousels, cliquez sur le bouton "Télécharger la sélection" pour télécharger tous les fichiers Excel dans une archive ZIP. Si vous n'avez sélectionné qu'un seul carrousel, le fichier Excel est téléchargé directement sans être compressé.
+L'application propose une section dédiée à l'aide et aux ressources pour vous accompagner dans votre utilisation. Cette section centralise tous les documents, liens et informations utiles mis à disposition par votre administrateur.
+
+### Accès à la page d'aide
+
+Pour accéder à la page d'aide, cliquez sur "Aide" dans le menu de navigation latéral. La page affiche toutes les ressources disponibles organisées par catégorie.
+
+### Manuels et documents téléchargeables
+
+La section "Manuels et Documents" regroupe tous les fichiers téléchargeables mis à disposition par votre administrateur. Ces fichiers peuvent inclure des manuels d'utilisation détaillés, des guides de bonnes pratiques, des modèles de carrousels, ou tout autre document utile.
+
+Pour télécharger un document, cliquez sur le bouton "Télécharger" à côté du fichier souhaité. Le fichier est téléchargé sur votre ordinateur et peut être consulté hors ligne.
+
+### Ressources en ligne
+
+La section "Ressources en Ligne" regroupe tous les liens vers des pages d'aide en ligne, des tutoriels vidéo, des forums de discussion, ou tout autre ressource web utile. Pour accéder à une ressource, cliquez sur le bouton "Ouvrir" à côté du lien souhaité. La page s'ouvre dans un nouvel onglet de votre navigateur.
+
+### Conditions générales d'utilisation
+
+Si votre administrateur a configuré un lien vers les conditions générales d'utilisation (CGU), celui-ci apparaît dans une section dédiée en bas de la page d'aide. Cliquez sur le bouton "Consulter les CGU" pour accéder au document.
+
+### Contenu personnalisé
+
+Le contenu de la page d'aide est entièrement géré par votre administrateur. Si vous ne trouvez pas l'information que vous cherchez, contactez votre administrateur pour lui demander d'ajouter la ressource manquante.
 
 ---
 
 ## Gestion du profil personnel
 
-Votre profil personnel contient des informations qui sont utilisées pour pré-remplir certains champs du générateur. Vous pouvez modifier ces informations à tout moment.
+Votre profil personnel contient les informations qui vous identifient dans l'application. Ces informations sont utilisées pour pré-remplir certains champs des carrousels et pour personnaliser votre expérience.
 
 ### Accès au profil
 
-Pour accéder à votre profil, cliquez sur votre nom en bas du menu de navigation latéral, puis sélectionnez "Mon Profil" dans le menu déroulant.
+Pour accéder à votre profil, cliquez sur votre nom en bas du menu de navigation latéral, puis sélectionnez "Mon Profil" dans le menu qui s'affiche.
 
-### Informations du profil
+### Modification des informations personnelles
 
-Votre profil contient les informations suivantes.
+Sur la page de profil, vous pouvez modifier les informations suivantes : Prénom, Nom, et Fonction. Ces informations sont automatiquement utilisées pour pré-remplir les champs "Nom de l'expert" et "Expertise" de la slide finale de vos carrousels.
 
-**Prénom** : Votre prénom tel qu'il apparaîtra dans le champ "Nom de l'expert" de la slide finale.
+Pour modifier une information, cliquez dans le champ correspondant, modifiez le texte, puis cliquez sur le bouton "Enregistrer" pour sauvegarder vos modifications.
 
-**Nom** : Votre nom de famille tel qu'il apparaîtra dans le champ "Nom de l'expert" de la slide finale.
+### Informations de connexion
 
-**Email** : Votre adresse email. Cette information est fournie par le système d'authentification et ne peut pas être modifiée.
+Votre adresse email et votre méthode de connexion (Google, Microsoft, etc.) sont affichées sur la page de profil mais ne peuvent pas être modifiées. Ces informations sont gérées par le système d'authentification OAuth et sont liées à votre compte de connexion.
 
-**Fonction** : Votre fonction ou titre professionnel. Cette information est utilisée pour pré-remplir le champ "Expertise" de la slide finale.
+### Déconnexion
 
-### Modification du profil
-
-Pour modifier votre prénom, nom, ou fonction, saisissez les nouvelles valeurs dans les champs correspondants et cliquez sur le bouton "Enregistrer les modifications".
-
-Les modifications sont appliquées immédiatement. Lors de votre prochaine création de carrousel, les champs "Nom de l'expert" et "Expertise" seront automatiquement pré-remplis avec vos nouvelles informations.
-
-### Utilisation des informations du profil
-
-Les informations de votre profil sont utilisées pour pré-remplir automatiquement certains champs du générateur, ce qui vous fait gagner du temps. Cependant, ces champs restent modifiables dans le générateur. Vous pouvez donc créer des carrousels pour d'autres personnes en modifiant simplement le nom de l'expert et l'expertise dans la slide finale.
+Pour vous déconnecter de l'application, cliquez sur votre nom en bas du menu de navigation latéral, puis sélectionnez "Déconnexion" dans le menu qui s'affiche. Vous serez redirigé vers la page de connexion.
 
 ---
 
 ## Conseils et astuces
 
-Cette section regroupe des conseils pratiques pour optimiser votre utilisation de l'application et créer des carrousels de qualité.
+Cette section regroupe des conseils pratiques pour optimiser votre utilisation de l'application et créer des carrousels de qualité professionnelle.
 
-### Rédaction du contenu
+### Planification du contenu
 
-**Soyez concis** : Les carrousels sont des formats visuels qui privilégient la concision. Évitez les longs paragraphes et privilégiez les phrases courtes et percutantes.
+Avant de commencer à créer un carrousel, prenez le temps de planifier votre contenu. Définissez clairement le message que vous souhaitez transmettre, identifiez les points clés à aborder, et structurez votre présentation de manière logique. Un carrousel bien planifié est plus rapide à créer et plus efficace à communiquer.
 
-**Structurez votre message** : Utilisez les différents types de slides pour structurer votre message de manière logique. Commencez par une introduction, développez vos points clés, et concluez avec votre offre.
+### Choix des types de slides
 
-**Utilisez des chiffres** : Les données chiffrées captent l'attention et renforcent la crédibilité de votre message. Utilisez le type de slide "Chiffre clé" pour mettre en avant vos statistiques.
+Variez les types de slides pour maintenir l'intérêt du lecteur. Alternez entre slides de texte, listes à puces, citations et chiffres clés pour créer un rythme dynamique. Chaque type de slide a un objectif spécifique : utilisez-les à bon escient.
 
-**Variez les types de slides** : Alternez les types de slides pour maintenir l'intérêt du lecteur. Un carrousel composé uniquement de slides de texte simple peut devenir monotone.
+### Rédaction des textes
 
-### Choix des images
+Privilégiez des textes courts et percutants. Les carrousels sont des supports visuels qui doivent être consultés rapidement. Évitez les paragraphes trop longs et allez à l'essentiel. Utilisez des phrases courtes et un vocabulaire accessible.
 
-**Soyez descriptif** : Lorsque vous rédigez des prompts d'images, soyez précis et descriptif. Mentionnez le type d'image (photo, illustration, icône), le sujet principal, le style, et l'ambiance souhaitée.
+### Création des prompts d'images
 
-**Cohérence visuelle** : Maintenez une cohérence visuelle entre toutes les images de votre carrousel. Si vous utilisez des photos pour certaines slides, privilégiez les photos pour toutes les slides. Si vous utilisez des illustrations, restez sur ce style.
+Un bon prompt d'image doit être précis et descriptif. Évitez les descriptions trop génériques comme "une image d'ordinateur" et préférez des descriptions détaillées comme "un ordinateur portable moderne sur un bureau épuré avec une plante verte en arrière-plan". Plus votre description est précise, plus l'image générée ou recherchée sera pertinente.
 
-**Simplicité** : Pour les slides de type "Chiffre clé", privilégiez des images simples (icônes, pictogrammes) plutôt que des photos complexes. Les images doivent compléter le texte, pas le concurrencer.
+### Utilisation de l'IA
 
-### Organisation du travail
+Utilisez l'intelligence artificielle pour gagner du temps, mais personnalisez toujours le contenu généré. L'IA est un excellent point de départ, mais votre expertise et votre connaissance du sujet sont irremplaçables. Relisez et ajustez systématiquement les suggestions de l'IA.
 
-**Préparez votre contenu** : Avant de commencer à créer un carrousel dans l'application, préparez votre contenu dans un document texte. Cela vous permettra de vous concentrer sur la structure et le message plutôt que sur la rédaction.
+### Sauvegarde régulière
 
-**Utilisez la duplication** : Si vous créez régulièrement des carrousels sur des thématiques similaires, créez un modèle de base et dupliquez-le pour gagner du temps.
+Prenez l'habitude de cliquer sur "Enregistrer" régulièrement pendant la création de votre carrousel. Bien que l'application sauvegarde automatiquement votre travail, une sauvegarde manuelle régulière vous protège contre les pertes de données en cas de problème technique.
 
-**Enregistrez régulièrement** : Même si l'application vous avertit avant de quitter la page, prenez l'habitude d'enregistrer régulièrement votre travail pour éviter toute perte de données.
+### Cohérence visuelle
 
-### Thématiques
+Maintenez une cohérence dans vos prompts d'images. Si vous utilisez un style photographique pour une slide, continuez avec ce style pour les slides suivantes. La cohérence visuelle renforce la professionnalité de votre carrousel.
 
-**Réutilisez les thématiques existantes** : Lorsque vous saisissez une thématique, consultez les suggestions qui apparaissent. Réutiliser une thématique existante facilite la recherche et l'organisation des carrousels.
+### Relecture et vérification
 
-**Soyez cohérent** : Si vous créez plusieurs carrousels sur un même sujet, utilisez toujours la même thématique pour faciliter leur regroupement dans l'historique.
+Avant d'exporter votre carrousel, relisez attentivement tout le contenu. Vérifiez l'orthographe, la grammaire, la cohérence des informations, et la pertinence des prompts d'images. Un carrousel sans erreur renforce votre crédibilité.
 
 ---
 
 ## Foire aux questions
 
-Cette section répond aux questions les plus fréquemment posées par les utilisateurs.
+Cette section répond aux questions les plus fréquemment posées par les utilisateurs de l'application.
 
-### Questions générales
+**Q : Combien de slides puis-je ajouter à un carrousel ?**
 
-**Q : Puis-je créer plusieurs carrousels en même temps ?**
-
-R : Non, le générateur ne permet de travailler que sur un seul carrousel à la fois. Si vous souhaitez créer un nouveau carrousel alors que vous avez un travail en cours, vous devez d'abord enregistrer ou réinitialiser le carrousel actuel.
-
-**Q : Combien de carrousels puis-je créer ?**
-
-R : Il n'y a pas de limite au nombre de carrousels que vous pouvez créer. Tous vos carrousels sont sauvegardés dans votre historique personnel.
+R : Le nombre de slides intermédiaires que vous pouvez ajouter est défini par votre administrateur dans la configuration de l'application. Ce nombre peut varier selon les besoins de votre organisation. Le compteur en haut de la page vous indique le nombre de slides actuellement présentes par rapport au maximum autorisé.
 
 **Q : Puis-je modifier un carrousel après l'avoir enregistré ?**
 
-R : Oui, utilisez la fonction de duplication depuis l'historique. Le carrousel dupliqué s'ouvrira dans le générateur et vous pourrez le modifier. N'oubliez pas de l'enregistrer à nouveau après vos modifications.
+R : Oui, vous pouvez reprendre et modifier un carrousel enregistré à tout moment en accédant au générateur. Si vous avez plusieurs carrousels en cours, le dernier carrousel sur lequel vous avez travaillé sera automatiquement chargé.
 
-**Q : Que se passe-t-il si je ferme mon navigateur sans enregistrer ?**
+**Q : Que se passe-t-il si je clique sur Reset par erreur ?**
 
-R : L'application affiche un message d'avertissement si vous tentez de fermer le navigateur avec des modifications non enregistrées. Si vous confirmez la fermeture, toutes les modifications non enregistrées seront perdues.
+R : Le bouton Reset efface complètement le carrousel en cours et crée un nouveau carrousel vierge. Cette action est irréversible. Une confirmation vous est demandée avant l'exécution pour éviter les erreurs. Si vous avez cliqué sur Reset par erreur et que votre carrousel était enregistré, vous pouvez le retrouver dans l'historique.
 
-### Questions sur les slides
+**Q : Puis-je créer un carrousel pour quelqu'un d'autre ?**
 
-**Q : Puis-je créer un carrousel avec moins de 10 slides ?**
+R : Oui, vous pouvez modifier les champs "Nom de l'expert" et "Expertise" de la slide finale pour créer un carrousel au nom d'une autre personne. Cependant, le carrousel sera enregistré sous votre compte utilisateur dans l'historique.
 
-R : Oui, vous pouvez créer un carrousel avec seulement les deux slides obligatoires (titre et finale) ou avec n'importe quel nombre de slides intermédiaires entre 0 et 8.
+**Q : Comment puis-je partager un carrousel avec un collègue ?**
 
-**Q : Puis-je réorganiser l'ordre des slides ?**
+R : Exportez votre carrousel au format Excel et envoyez le fichier à votre collègue. Le fichier Excel contient toutes les informations nécessaires pour reproduire le carrousel. Votre collègue peut également accéder à l'historique si vous travaillez dans la même organisation et que les permissions le permettent.
 
-R : Non, l'ordre des slides est automatique. La slide titre est toujours en position 1, les slides intermédiaires sont numérotées de 2 à 9 dans l'ordre où vous les avez ajoutées, et la slide finale est toujours en position 10.
+**Q : L'IA peut-elle créer un carrousel complet automatiquement ?**
 
-**Q : Puis-je utiliser plusieurs fois le même type de slide dans un carrousel ?**
+R : L'IA peut générer du contenu pour chaque slide individuellement, mais elle ne peut pas créer un carrousel complet de A à Z automatiquement. Vous devez définir la structure du carrousel (nombre et types de slides) et utiliser l'IA pour générer le contenu de chaque slide. Cette approche garantit que le carrousel correspond à vos besoins spécifiques.
 
-R : Oui, vous pouvez utiliser le même type de slide autant de fois que nécessaire. Par exemple, vous pouvez créer un carrousel composé uniquement de slides de type "Texte simple".
+**Q : Que faire si je ne trouve pas le type de slide dont j'ai besoin ?**
 
-**Q : Pourquoi certains types de slides ne sont pas disponibles ?**
+R : Les types de slides disponibles sont configurés par votre administrateur. Si vous avez besoin d'un type de slide qui n'est pas disponible, contactez votre administrateur pour lui demander de l'activer ou de créer un nouveau type personnalisé.
 
-R : Votre administrateur peut désactiver certains types de slides. Si un type de slide n'apparaît pas dans le menu de sélection, contactez votre administrateur.
+**Q : Puis-je utiliser l'application sur mobile ou tablette ?**
 
-### Questions sur l'intelligence artificielle
+R : L'application est optimisée pour une utilisation sur ordinateur de bureau ou portable. Bien qu'elle soit accessible depuis un navigateur mobile ou tablette, l'expérience utilisateur n'est pas optimale sur ces appareils. Il est recommandé d'utiliser un ordinateur pour créer vos carrousels.
 
-**Q : Pourquoi les boutons de génération IA ne s'affichent pas ?**
+**Q : Mes données sont-elles sécurisées ?**
 
-R : La fonctionnalité d'intelligence artificielle doit être activée et configurée par votre administrateur. Si les boutons ne s'affichent pas, contactez votre administrateur.
+R : Oui, toutes les données sont stockées de manière sécurisée dans la base de données de l'application. L'authentification OAuth garantit que seuls les utilisateurs autorisés peuvent accéder à l'application. Les fichiers uploadés (comme les logos) sont stockés sur un service de stockage cloud sécurisé.
 
-**Q : La génération IA est-elle obligatoire ?**
+**Q : Comment puis-je obtenir de l'aide supplémentaire ?**
 
-R : Non, la génération IA est une aide optionnelle. Vous pouvez toujours remplir manuellement tous les champs "Prompt image".
-
-**Q : Puis-je modifier une description générée par l'IA ?**
-
-R : Oui, les descriptions générées par l'IA sont des suggestions. Vous pouvez les modifier, les compléter, ou les remplacer entièrement.
-
-**Q : L'IA génère-t-elle les images elles-mêmes ?**
-
-R : Non, l'IA génère uniquement des descriptions textuelles d'images (prompts). Ces descriptions sont destinées à être utilisées avec des outils de recherche ou de génération d'images.
-
-### Questions sur l'export
-
-**Q : Quel format de fichier est utilisé pour l'export ?**
-
-R : Les carrousels sont exportés au format Excel (.xlsx), compatible avec Microsoft Excel, Google Sheets, et LibreOffice Calc.
-
-**Q : Puis-je exporter au format PDF ou PowerPoint ?**
-
-R : Non, l'application exporte uniquement au format Excel. Vous pouvez ensuite utiliser le fichier Excel pour créer une présentation PowerPoint ou un document PDF avec d'autres outils.
-
-**Q : Où sont envoyés les emails lorsque j'utilise "Envoyer et Télécharger" ?**
-
-R : Les emails sont envoyés à l'adresse configurée par votre administrateur dans la configuration SMTP. Cette adresse est généralement celle d'un responsable de publication ou d'un service central.
-
-### Questions sur le profil
-
-**Q : Pourquoi ne puis-je pas modifier mon adresse email ?**
-
-R : Votre adresse email est fournie par le système d'authentification (Google, Microsoft, etc.) et ne peut pas être modifiée dans l'application. Si vous souhaitez utiliser une autre adresse email, vous devez vous connecter avec un autre compte.
-
-**Q : Les modifications de mon profil affectent-elles mes carrousels existants ?**
-
-R : Non, les modifications de votre profil n'affectent que les nouveaux carrousels que vous créerez. Les carrousels déjà enregistrés conservent les informations qui étaient présentes au moment de leur création.
+R : Consultez la page "Aide" de l'application pour accéder aux ressources mises à disposition par votre administrateur. Si vous ne trouvez pas la réponse à votre question, contactez votre administrateur ou l'équipe de support technique de votre organisation.
 
 ---
 
-## Conclusion
+**Fin du Manuel Utilisateur**
 
-Ce manuel couvre l'ensemble des fonctionnalités disponibles pour les utilisateurs du Générateur de Carrousels GdN. Vous disposez maintenant de toutes les informations nécessaires pour créer des carrousels professionnels et efficaces.
+Pour toute question ou suggestion d'amélioration de ce manuel, contactez votre administrateur système.
 
-N'hésitez pas à explorer l'application, à expérimenter avec les différents types de slides, et à utiliser l'intelligence artificielle pour vous assister dans votre travail. La pratique régulière vous permettra de maîtriser rapidement tous les aspects de l'outil.
-
-Si vous rencontrez des difficultés ou si vous avez des questions non couvertes par ce manuel, n'hésitez pas à contacter votre administrateur ou le support technique.
-
-Bonne création de carrousels !
-
----
-
-**Document rédigé par Manus AI**
-
-**Version 1.0 - Janvier 2025**
+**Réalisé par Frédéric Dedobbeleer - [FDWeb](https://www.fdweb.be) - [Guichet du Numérique](https://www.guichetdunumerique.be)**
