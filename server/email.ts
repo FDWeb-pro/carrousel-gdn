@@ -188,6 +188,7 @@ export function generateExcelBuffer(slides: any[]): Buffer {
         ];
       }
 
+      // Use the same logic as client-side exportToExcel
       const slideIndex = pageNumber - 2;
       const slide = intermediateSlides[slideIndex];
 
@@ -198,7 +199,7 @@ export function generateExcelBuffer(slides: any[]): Buffer {
       if (slide.type === "type1") {
         return [
           pageNumber,
-          "type 1",
+          "Type 1",
           slide.texte1 || "",
           "",
           "",
@@ -212,7 +213,7 @@ export function generateExcelBuffer(slides: any[]): Buffer {
       } else if (slide.type === "type2") {
         return [
           pageNumber,
-          "type 2",
+          "Type 2",
           slide.texte1 || "",
           "",
           "",
@@ -226,7 +227,7 @@ export function generateExcelBuffer(slides: any[]): Buffer {
       } else if (slide.type === "type3") {
         return [
           pageNumber,
-          "type 3",
+          "Type 3",
           slide.texte1 || "",
           "",
           "",
@@ -240,7 +241,7 @@ export function generateExcelBuffer(slides: any[]): Buffer {
       } else if (slide.type === "type4") {
         return [
           pageNumber,
-          "type 4",
+          "Type 4",
           slide.texte1 || "",
           "",
           "",
@@ -254,7 +255,7 @@ export function generateExcelBuffer(slides: any[]): Buffer {
       } else if (slide.type === "type5") {
         return [
           pageNumber,
-          "type 5",
+          "Type 5",
           slide.texte1 || "",
           slide.texte2 || "",
           slide.texte3 || "",

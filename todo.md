@@ -233,3 +233,8 @@
 ## Bugs du champ Thématique
 - [x] Corriger la perte de focus lors de la saisie dans le champ Thématique
 - [x] Corriger le verrouillage du champ Thématique après ajout d'une slide
+
+
+## Bug envoi email - Slides manquantes
+- [x] Corriger le fichier Excel envoyé par email qui ne contient que les slides titre et finale
+- [x] S'assurer que toutes les slides intermédiaires sont incluses dans le fichier envoyé

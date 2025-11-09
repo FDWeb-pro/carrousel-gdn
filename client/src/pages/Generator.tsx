@@ -81,6 +81,7 @@ export default function Generator() {
   const [carrouselId, setCarrouselId] = useState<number | null>(null);
   const [generatingPrompt, setGeneratingPrompt] = useState<string | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [showExitDialog, setShowExitDialog] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
   const [location, navigate] = useLocation();
@@ -400,6 +401,12 @@ export default function Generator() {
   });
 
   const exportAndSendEmail = async () => {
+    if (isSending) {
+      return;
+    }
+    
+    setIsSending(true);
+    
     // First, save the carrousel if not already saved
     let savedCarrouselId = carrouselId;
     
@@ -437,10 +444,14 @@ export default function Generator() {
     exportToExcel();
 
     // Send email with the carrousel
-    await sendEmailMutation.mutateAsync({
-      carrouselId: savedCarrouselId,
-      emailTo: undefined, // Will use SMTP destination email
-    });
+    try {
+      await sendEmailMutation.mutateAsync({
+        carrouselId: savedCarrouselId,
+        emailTo: undefined, // Will use SMTP destination email
+      });
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const resetCarrousel = () => {
@@ -864,7 +875,7 @@ export default function Generator() {
               <Download className="w-4 h-4 mr-2" />
               Télécharger Excel
             </Button>
-            <Button onClick={exportAndSendEmail} variant="default" size="sm">
+            <Button onClick={exportAndSendEmail} variant="default" size="sm" disabled={isSending}>
               <Mail className="w-4 h-4 mr-2" />
               Envoyer et Télécharger
             </Button>
