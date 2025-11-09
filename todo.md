@@ -221,3 +221,10 @@
 - [x] Vérifier la logique de blocage dans le système d'authentification
 - [x] Empêcher la connexion des utilisateurs avec status="blocked"
 - [x] Afficher un message approprié aux utilisateurs bloqués
+
+
+## Corrections de bugs urgents
+- [x] Optimiser l'auto-complétion des thématiques (debounce pour éviter les ralentissements)
+- [x] Capitaliser la première lettre des types de slides dans l'export Excel
+- [x] Corriger l'erreur lors de l'envoi email sans enregistrement préalable
+- [x] Corriger le blocage d'utilisateurs qui ne fonctionne pas correctement

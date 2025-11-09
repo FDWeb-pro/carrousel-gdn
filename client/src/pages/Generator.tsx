@@ -310,7 +310,7 @@ export default function Generator() {
         if (slide.type === "type1") {
           return [
             pageNumber,
-            "type 1",
+            "Type 1",
             slide.texte1 || "",
             "",
             "",
@@ -324,7 +324,7 @@ export default function Generator() {
         } else if (slide.type === "type2") {
           return [
             pageNumber,
-            "type 2",
+            "Type 2",
             slide.texte1 || "",
             "",
             "",
@@ -338,7 +338,7 @@ export default function Generator() {
         } else if (slide.type === "type3") {
           return [
             pageNumber,
-            "type 3",
+            "Type 3",
             slide.texte1 || "",
             "",
             "",
@@ -352,7 +352,7 @@ export default function Generator() {
         } else if (slide.type === "type4") {
           return [
             pageNumber,
-            "type 4",
+            "Type 4",
             slide.texte1 || "",
             "",
             "",
@@ -366,7 +366,7 @@ export default function Generator() {
         } else if (slide.type === "type5") {
           return [
             pageNumber,
-            "type 5",
+            "Type 5",
             slide.texte1 || "",
             slide.texte2 || "",
             slide.texte3 || "",
@@ -401,15 +401,36 @@ export default function Generator() {
 
   const exportAndSendEmail = async () => {
     // First, save the carrousel if not already saved
-    if (!carrouselId) {
-      await saveCarrousel();
-      // Wait a bit for the ID to be set
-      await new Promise(resolve => setTimeout(resolve, 500));
-    }
+    let savedCarrouselId = carrouselId;
+    
+    if (!savedCarrouselId) {
+      const titleSlide = slides.find((s) => s.type === "Titre");
+      if (!titleSlide?.thematique || !titleSlide?.titre) {
+        toast.error("⚠️ Veuillez remplir la thématique et le titre");
+        return;
+      }
 
-    if (!carrouselId) {
-      toast.error("⚠️ Erreur lors de l'enregistrement du carrousel");
-      return;
+      const intermediateSlides = slides.filter((s) => s.type !== "Titre" && s.type !== "Finale");
+      if (intermediateSlides.length < 2) {
+        toast.error("⚠️ Vous devez créer au moins 2 slides intermédiaires");
+        return;
+      }
+
+      try {
+        const result = await createCarrouselMutation.mutateAsync({
+          titre: titleSlide.titre,
+          thematique: titleSlide.thematique,
+          emailDestination: undefined,
+          slides: JSON.stringify(slides),
+        });
+        savedCarrouselId = result.id;
+        setCarrouselId(result.id);
+        setHasUnsavedChanges(false);
+        toast.success("✅ Carrousel enregistré avec succès");
+      } catch (error) {
+        toast.error("⚠️ Erreur lors de l'enregistrement du carrousel");
+        return;
+      }
     }
 
     // Then, export to Excel
@@ -417,7 +438,7 @@ export default function Generator() {
 
     // Send email with the carrousel
     await sendEmailMutation.mutateAsync({
-      carrouselId: carrouselId,
+      carrouselId: savedCarrouselId,
       emailTo: undefined, // Will use SMTP destination email
     });
   };

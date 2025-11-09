@@ -292,6 +292,11 @@ class SDKServer {
       throw ForbiddenError("User not found");
     }
 
+    // Block users with blocked status immediately
+    if (user.status === 'blocked') {
+      throw ForbiddenError("Your account has been blocked by an administrator");
+    }
+
     await db.upsertUser({
       openId: user.openId,
       lastSignedIn: signedInAt,

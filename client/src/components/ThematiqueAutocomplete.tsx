@@ -21,11 +21,21 @@ export default function ThematiqueAutocomplete({
 }: ThematiqueAutocompleteProps) {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(value);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Debounce search term to avoid too many requests
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   const { data: searchResults = [] } = trpc.thematiques.search.useQuery(
-    { searchTerm },
-    { enabled: searchTerm.length > 0 && open }
+    { searchTerm: debouncedSearchTerm },
+    { enabled: debouncedSearchTerm.length > 0 && open }
   );
 
   useEffect(() => {
