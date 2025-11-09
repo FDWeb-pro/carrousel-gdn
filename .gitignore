@@ -105,3 +105,29 @@ temp/
 *.db
 *.sqlite
 *.sqlite3
+
+# === Fichiers sensibles supplémentaires ===
+*.key
+*.pem
+*.p12
+*.pfx
+.passwords.txt
+
+# === Uploads et sauvegardes ===
+uploads/
+backup/
+backups/
+*.backup
+
+# === Docker ===
+docker-compose.override.yml
+.docker/
+
+# === Drizzle ===
+drizzle/.push-snapshot.json
+
+# === Archives ===
+*.tar.gz
+*.zip
+*.rar
+*.7z
