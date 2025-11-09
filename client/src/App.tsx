@@ -13,6 +13,10 @@ import AdminSlideTypes from "./pages/AdminSlideTypes";
 import AdminSmtp from "@/pages/AdminSmtp";
 import AdminAudit from "@/pages/AdminAudit";
 import AdminAIConfig from "@/pages/AdminAIConfig";
+import AdminBrandConfig from "@/pages/AdminBrandConfig";
+import AdminSlideConfig from "@/pages/AdminSlideConfig";
+import Help from "@/pages/Help";
+import AdminHelp from "@/pages/AdminHelp";
 import PendingApproval from "./pages/PendingApproval";
 import AccessDenied from "./pages/AccessDenied";
 import { useAuth } from "./_core/hooks/useAuth";
@@ -62,6 +66,10 @@ function Router() {
       <Route path="/admin/smtp" component={() => <ProtectedRoute component={AdminSmtp} adminOnly />} />
       <Route path="/admin/audit" component={() => <ProtectedRoute component={AdminAudit} adminOnly />} />
       <Route path="/admin/ai-config" component={() => <ProtectedRoute component={AdminAIConfig} adminOnly />} />
+      <Route path="/admin/brand-config" component={() => <ProtectedRoute component={AdminBrandConfig} adminOnly />} />
+      <Route path="/admin/slide-config" component={() => <ProtectedRoute component={AdminSlideConfig} adminOnly />} />
+      <Route path="/help" component={() => <ProtectedRoute component={Help} />} />
+      <Route path="/admin/help" component={() => <ProtectedRoute component={AdminHelp} adminOnly />} />
       <Route path="/pending" component={PendingApproval} />
       <Route path="/access-denied" component={AccessDenied} />
       <Route path="/404" component={NotFound} />

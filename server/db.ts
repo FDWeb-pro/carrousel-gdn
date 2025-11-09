@@ -1,6 +1,6 @@
 import { eq, sql, like, desc, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { carrousels, InsertCarrousel, InsertSlideTypeConfig, InsertUser, slideTypesConfig, users, smtpConfig, InsertSmtpConfig, notifications, InsertNotification, auditLog, InsertAuditLog, aiConfig, InsertAiConfig, thematiques, InsertThematique } from "../drizzle/schema";
+import { carrousels, InsertCarrousel, InsertSlideTypeConfig, InsertUser, slideTypesConfig, users, smtpConfig, InsertSmtpConfig, notifications, InsertNotification, auditLog, InsertAuditLog, aiConfig, InsertAiConfig, thematiques, InsertThematique, brandConfig, InsertBrandConfig, slideConfig, InsertSlideConfig, helpResources, InsertHelpResource } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -429,4 +429,106 @@ export async function upsertThematique(name: string) {
       .limit(1);
     return newThematique[0];
   }
+}
+
+
+// Brand Config queries
+export async function getBrandConfig() {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(brandConfig).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function upsertBrandConfig(data: InsertBrandConfig) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const existing = await getBrandConfig();
+  
+  if (existing) {
+    await db.update(brandConfig)
+      .set({
+        organizationName: data.organizationName,
+        logoUrl: data.logoUrl,
+        description: data.description,
+        updatedAt: new Date()
+      })
+      .where(eq(brandConfig.id, existing.id));
+  } else {
+    await db.insert(brandConfig).values(data);
+  }
+  
+  return getBrandConfig();
+}
+
+// Slide Config queries
+export async function getSlideConfig() {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(slideConfig).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function upsertSlideConfig(data: InsertSlideConfig) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const existing = await getSlideConfig();
+  
+  if (existing) {
+    await db.update(slideConfig)
+      .set({
+        minSlides: data.minSlides,
+        maxSlides: data.maxSlides,
+        updatedAt: new Date()
+      })
+      .where(eq(slideConfig.id, existing.id));
+  } else {
+    await db.insert(slideConfig).values(data);
+  }
+  
+  return getSlideConfig();
+}
+
+// Help Resources queries
+export async function getAllHelpResources() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(helpResources)
+    .where(eq(helpResources.isActive, 1))
+    .orderBy(helpResources.displayOrder);
+}
+
+export async function getAllHelpResourcesAdmin() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(helpResources).orderBy(helpResources.displayOrder);
+}
+
+export async function getHelpResourceById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(helpResources).where(eq(helpResources.id, id)).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function createHelpResource(data: InsertHelpResource) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  await db.insert(helpResources).values(data);
+  return db.select().from(helpResources).orderBy(desc(helpResources.id)).limit(1);
+}
+
+export async function updateHelpResource(id: number, data: Partial<InsertHelpResource>) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  await db.update(helpResources).set({ ...data, updatedAt: new Date() }).where(eq(helpResources.id, id));
+  return getHelpResourceById(id);
+}
+
+export async function deleteHelpResource(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  await db.delete(helpResources).where(eq(helpResources.id, id));
 }

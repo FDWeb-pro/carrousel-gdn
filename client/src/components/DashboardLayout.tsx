@@ -21,9 +21,9 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
+import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { FileText, History, LayoutDashboard, LogOut, Mail, PanelLeft, Settings, Shield, Sparkles, User, Users } from "lucide-react";
+import { Building2, FileText, HelpCircle, History, LayoutDashboard, LogOut, Mail, PanelLeft, Settings, Shield, Sliders, Sparkles, User, Users } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -32,8 +32,12 @@ import { Button } from "./ui/button";
 const menuItems = [
   { icon: FileText, label: "Générateur", path: "/", roles: ['membre', 'admin', 'super_admin'] },
   { icon: History, label: "Historique", path: "/history", roles: ['membre', 'admin', 'super_admin'] },
+  { icon: HelpCircle, label: "Aide", path: "/help", roles: ['membre', 'admin', 'super_admin'] },
   { icon: Users, label: "Utilisateurs", path: "/admin/users", roles: ['admin', 'super_admin'] },
   { icon: Settings, label: "Types de Slides", path: "/admin/slide-types", roles: ['admin', 'super_admin'] },
+  { icon: Building2, label: "Paramètres de Marque", path: "/admin/brand-config", roles: ['admin', 'super_admin'] },
+  { icon: Sliders, label: "Configuration Slides", path: "/admin/slide-config", roles: ['admin', 'super_admin'] },
+  { icon: HelpCircle, label: "Gestion de l'Aide", path: "/admin/help", roles: ['admin', 'super_admin'] },
   { icon: Mail, label: "Configuration SMTP", path: "/admin/smtp", roles: ['super_admin'] },
   { icon: Sparkles, label: "Configuration IA", path: "/admin/ai-config", roles: ['super_admin'] },
   { icon: Shield, label: "Historique d'audit", path: "/admin/audit", roles: ['admin', 'super_admin'] },
@@ -56,6 +60,10 @@ export default function DashboardLayout({
     return saved ? parseInt(saved, 10) : DEFAULT_WIDTH;
   });
   const { loading, user } = useAuth();
+  const { data: brandConfig } = trpc.brand.getConfig.useQuery();
+  
+  const appTitle = brandConfig?.organizationName || 'Générateur de Carrousels';
+  const appLogo = brandConfig?.logoUrl || '/logo.png';
 
   useEffect(() => {
     localStorage.setItem(SIDEBAR_WIDTH_KEY, sidebarWidth.toString());
@@ -73,14 +81,14 @@ export default function DashboardLayout({
             <div className="relative group">
               <div className="relative">
                 <img
-                  src={APP_LOGO}
-                  alt={APP_TITLE}
+                  src={appLogo}
+                  alt={appTitle}
                   className="h-20 w-20 rounded-xl object-cover shadow"
                 />
               </div>
             </div>
             <div className="text-center space-y-2">
-              <h1 className="text-2xl font-bold tracking-tight">{APP_TITLE}</h1>
+              <h1 className="text-2xl font-bold tracking-tight">{appTitle}</h1>
               <p className="text-sm text-muted-foreground">
                 Please sign in to continue
               </p>
@@ -108,7 +116,12 @@ export default function DashboardLayout({
         } as CSSProperties
       }
     >
-      <DashboardLayoutContent setSidebarWidth={setSidebarWidth} onBeforeNavigate={onBeforeNavigate}>
+      <DashboardLayoutContent 
+        setSidebarWidth={setSidebarWidth} 
+        onBeforeNavigate={onBeforeNavigate}
+        appTitle={appTitle}
+        appLogo={appLogo}
+      >
         {children}
       </DashboardLayoutContent>
     </SidebarProvider>
@@ -119,12 +132,16 @@ type DashboardLayoutContentProps = {
   children: React.ReactNode;
   setSidebarWidth: (width: number) => void;
   onBeforeNavigate?: (targetPath: string) => boolean;
+  appTitle: string;
+  appLogo: string;
 };
 
 function DashboardLayoutContent({
   children,
   setSidebarWidth,
   onBeforeNavigate,
+  appTitle,
+  appLogo,
 }: DashboardLayoutContentProps) {
   const { user, logout } = useAuth();
   const [location, setLocation] = useLocation();
@@ -188,7 +205,7 @@ function DashboardLayoutContent({
               {isCollapsed ? (
                 <div className="relative h-8 w-8 shrink-0 group">
                   <img
-                    src={APP_LOGO}
+                    src={appLogo}
                     className="h-8 w-8 rounded-md object-cover ring-1 ring-border"
                     alt="Logo"
                   />
@@ -203,12 +220,12 @@ function DashboardLayoutContent({
                 <>
                   <div className="flex items-center gap-3 min-w-0">
                     <img
-                      src={APP_LOGO}
+                      src={appLogo}
                       className="h-8 w-8 rounded-md object-cover ring-1 ring-border shrink-0"
                       alt="Logo"
                     />
                     <span className="font-semibold tracking-tight truncate">
-                      {APP_TITLE}
+                      {appTitle}
                     </span>
                   </div>
                   <button
@@ -313,7 +330,7 @@ function DashboardLayoutContent({
               <div className="flex items-center gap-3">
                 <div className="flex flex-col gap-1">
                   <span className="tracking-tight text-foreground">
-                    {activeMenuItem?.label ?? APP_TITLE}
+                    {activeMenuItem?.label ?? appTitle}
                   </span>
                 </div>
               </div>
@@ -321,6 +338,28 @@ function DashboardLayoutContent({
           </div>
         )}
         <main className="flex-1 p-4">{children}</main>
+        <footer className="border-t py-4 px-4 text-center text-sm text-muted-foreground">
+          <p>
+            Réalisé par Frédéric Dedobbeleer -{" "}
+            <a 
+              href="https://www.fdweb.be" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              FDWeb
+            </a>
+            {" "}-{" "}
+            <a 
+              href="https://www.guichetdunumerique.be" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              Guichet du Numérique
+            </a>
+          </p>
+        </footer>
       </SidebarInset>
     </>
   );

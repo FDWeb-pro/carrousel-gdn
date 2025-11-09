@@ -826,6 +826,195 @@ export const appRouter = router({
       }
     }),
   }),
+
+  // Brand configuration routes (admin/super_admin only)
+  brand: router({
+    getConfig: publicProcedure.query(async () => {
+      const config = await db.getBrandConfig();
+      return config || { organizationName: 'Générateur de Carrousels', logoUrl: null, description: null };
+    }),
+
+    updateConfig: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).input(z.object({
+      organizationName: z.string().min(1).max(255),
+      logoUrl: z.string().optional(),
+      description: z.string().max(250).optional(),
+    })).mutation(async ({ input, ctx }) => {
+      const result = await db.upsertBrandConfig(input);
+      await db.createAuditLog({
+        userId: ctx.user.id,
+        userName: ctx.user.name || 'Unknown',
+        action: 'update_brand_config',
+        entityType: 'brand_config',
+        entityId: result?.id,
+        details: JSON.stringify(input),
+      });
+      return result;
+    }),
+
+    uploadLogo: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).input(z.object({
+      fileName: z.string(),
+      fileData: z.string(), // base64
+      mimeType: z.string(),
+    })).mutation(async ({ input }) => {
+      const { storagePut } = await import('./storage');
+      const buffer = Buffer.from(input.fileData, 'base64');
+      const randomSuffix = Math.random().toString(36).substring(2, 15);
+      const fileKey = `brand-logos/${randomSuffix}-${input.fileName}`;
+      const { url } = await storagePut(fileKey, buffer, input.mimeType);
+      return { url, fileKey };
+    }),
+  }),
+
+  // Slide configuration routes (admin/super_admin only)
+  slideConfigRouter: router({
+    getConfig: publicProcedure.query(async () => {
+      const config = await db.getSlideConfig();
+      return config || { minSlides: 2, maxSlides: 8 };
+    }),
+
+    updateConfig: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).input(z.object({
+      minSlides: z.number().min(2).max(100),
+      maxSlides: z.number().min(2).max(100),
+    })).mutation(async ({ input, ctx }) => {
+      if (input.minSlides > input.maxSlides) {
+        throw new TRPCError({ 
+          code: 'BAD_REQUEST', 
+          message: 'Le minimum ne peut pas être supérieur au maximum' 
+        });
+      }
+      const result = await db.upsertSlideConfig(input);
+      await db.createAuditLog({
+        userId: ctx.user.id,
+        userName: ctx.user.name || 'Unknown',
+        action: 'update_slide_config',
+        entityType: 'slide_config',
+        entityId: result?.id,
+        details: JSON.stringify(input),
+      });
+      return result;
+    }),
+  }),
+
+  // Help resources routes
+  help: router({
+    list: publicProcedure.query(async () => {
+      return db.getAllHelpResources();
+    }),
+
+    listAdmin: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).query(async () => {
+      return db.getAllHelpResourcesAdmin();
+    }),
+
+    create: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).input(z.object({
+      type: z.enum(['file', 'link', 'cgu']),
+      title: z.string().min(1).max(255),
+      description: z.string().optional(),
+      url: z.string(),
+      fileKey: z.string().optional(),
+      displayOrder: z.number().optional(),
+    })).mutation(async ({ input, ctx }) => {
+      const result = await db.createHelpResource(input);
+      await db.createAuditLog({
+        userId: ctx.user.id,
+        userName: ctx.user.name || 'Unknown',
+        action: 'create_help_resource',
+        entityType: 'help_resource',
+        entityId: result[0]?.id,
+        details: JSON.stringify(input),
+      });
+      return result[0];
+    }),
+
+    update: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).input(z.object({
+      id: z.number(),
+      type: z.enum(['file', 'link', 'cgu']).optional(),
+      title: z.string().min(1).max(255).optional(),
+      description: z.string().optional(),
+      url: z.string().optional(),
+      fileKey: z.string().optional(),
+      displayOrder: z.number().optional(),
+      isActive: z.number().optional(),
+    })).mutation(async ({ input, ctx }) => {
+      const { id, ...data } = input;
+      const result = await db.updateHelpResource(id, data);
+      await db.createAuditLog({
+        userId: ctx.user.id,
+        userName: ctx.user.name || 'Unknown',
+        action: 'update_help_resource',
+        entityType: 'help_resource',
+        entityId: id,
+        details: JSON.stringify(data),
+      });
+      return result;
+    }),
+
+    delete: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).input(z.object({
+      id: z.number(),
+    })).mutation(async ({ input, ctx }) => {
+      await db.deleteHelpResource(input.id);
+      await db.createAuditLog({
+        userId: ctx.user.id,
+        userName: ctx.user.name || 'Unknown',
+        action: 'delete_help_resource',
+        entityType: 'help_resource',
+        entityId: input.id,
+      });
+      return { success: true };
+    }),
+
+    uploadFile: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+      return next({ ctx });
+    }).input(z.object({
+      fileName: z.string(),
+      fileData: z.string(), // base64
+      mimeType: z.string(),
+    })).mutation(async ({ input }) => {
+      const { storagePut } = await import('./storage');
+      const buffer = Buffer.from(input.fileData, 'base64');
+      const randomSuffix = Math.random().toString(36).substring(2, 15);
+      const fileKey = `help-files/${randomSuffix}-${input.fileName}`;
+      const { url } = await storagePut(fileKey, buffer, input.mimeType);
+      return { url, fileKey };
+    }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

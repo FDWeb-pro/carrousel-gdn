@@ -71,6 +71,13 @@
       "when": 1762621824520,
       "tag": "0009_flashy_garia",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1762683119911,
+      "tag": "0010_lively_prodigy",
+      "breakpoints": true
     }
   ]
 }

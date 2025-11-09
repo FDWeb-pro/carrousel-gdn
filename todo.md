@@ -238,3 +238,21 @@
 ## Bug envoi email - Slides manquantes
 - [x] Corriger le fichier Excel envoyé par email qui ne contient que les slides titre et finale
 - [x] S'assurer que toutes les slides intermédiaires sont incluses dans le fichier envoyé
+
+
+## Transformation White-Label et Personnalisation
+- [x] Corriger l'export Excel pour supprimer les lignes vides entre la dernière slide remplie et la slide finale
+- [x] Créer une table brandConfig pour stocker les paramètres de marque (nom structure, logo, description)
+- [x] Créer une table slideConfig pour stocker min/max slides (min ≥2, max ≤100)
+- [x] Créer une table helpResources pour stocker les ressources d'aide (fichiers, liens)
+- [x] Implémenter la page AdminBrandConfig pour configurer nom, logo et description de la structure
+- [x] Implémenter la page AdminSlideConfig pour configurer le nombre de slides min/max
+- [x] Implémenter la page Help pour afficher les ressources d'aide aux utilisateurs
+- [x] Implémenter la page AdminHelp pour gérer les ressources d'aide (fichiers, liens, CGU)
+- [x] Remplacer "Générateur de Carrousels GdN" par "Générateur de Carrousels"
+- [x] Afficher le logo personnalisé au-dessus du titre dans la sidebar
+- [x] Remplacer "Créez votre carrousel pour le Guichet du Numérique" par le nom de la structure
+- [x] Ajouter la mention "Réalisé par Frédéric Dedobbeleer - FDWeb - Guichet du numérique" avec liens
+- [x] Nettoyer le code des références Manus non essentielles
+- [ ] Adapter le générateur pour respecter le min/max slides configuré (à implémenter)
+- [ ] Adapter l'export Excel pour respecter le nombre de slides configuré (à implémenter)

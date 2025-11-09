@@ -159,3 +159,51 @@ export const thematiques = mysqlTable("thematiques", {
 
 export type Thematique = typeof thematiques.$inferSelect;
 export type InsertThematique = typeof thematiques.$inferInsert;
+
+/**
+ * Configuration de marque - paramètres de personnalisation de l'application
+ */
+export const brandConfig = mysqlTable("brand_config", {
+  id: int("id").autoincrement().primaryKey(),
+  organizationName: varchar("organizationName", { length: 255 }).notNull(),
+  logoUrl: text("logoUrl"), // URL du logo carré stocké dans S3
+  description: text("description"), // Description courte (max 250 caractères)
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type BrandConfig = typeof brandConfig.$inferSelect;
+export type InsertBrandConfig = typeof brandConfig.$inferInsert;
+
+/**
+ * Configuration des slides - paramètres min/max du nombre de slides
+ */
+export const slideConfig = mysqlTable("slide_config", {
+  id: int("id").autoincrement().primaryKey(),
+  minSlides: int("minSlides").default(2).notNull(), // Minimum 2
+  maxSlides: int("maxSlides").default(8).notNull(), // Maximum 100
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SlideConfig = typeof slideConfig.$inferSelect;
+export type InsertSlideConfig = typeof slideConfig.$inferInsert;
+
+/**
+ * Ressources d'aide - fichiers et liens pour la page d'aide
+ */
+export const helpResources = mysqlTable("help_resources", {
+  id: int("id").autoincrement().primaryKey(),
+  type: mysqlEnum("type", ["file", "link", "cgu"]).notNull(), // file = fichier téléchargeable, link = lien externe, cgu = lien CGU
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  url: text("url").notNull(), // URL du fichier S3 ou lien externe
+  fileKey: text("fileKey"), // Clé S3 pour les fichiers uploadés
+  displayOrder: int("displayOrder").default(0).notNull(), // Ordre d'affichage
+  isActive: int("isActive").default(1).notNull(), // 0 = masqué, 1 = visible
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type HelpResource = typeof helpResources.$inferSelect;
+export type InsertHelpResource = typeof helpResources.$inferInsert;

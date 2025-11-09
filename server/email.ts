@@ -149,127 +149,119 @@ export function generateExcelBuffer(slides: any[]): Buffer {
   ]);
 
   const intermediateSlides = slides.filter((s: any) => s.type !== "Titre" && s.type !== "Finale");
-  const fixedSlides = Array(10)
-    .fill(null)
-    .map((_, idx) => {
-      const pageNumber = idx + 1;
-
-      if (pageNumber === 1) {
-        const titleSlide = slides.find((s: any) => s.type === "Titre");
-        return [
-          1,
-          "Titre",
-          titleSlide?.thematique || "",
-          titleSlide?.titre || "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-        ];
-      }
-
-      if (pageNumber === 10) {
-        const finalSlide = slides.find((s: any) => s.type === "Finale");
-        return [
-          10,
-          "Finale",
-          finalSlide?.expert || "",
-          finalSlide?.expertise || "",
-          "",
-          "",
-          finalSlide?.url || "",
-          "",
-          "",
-          "",
-          "",
-        ];
-      }
-
-      // Use the same logic as client-side exportToExcel
-      const slideIndex = pageNumber - 2;
-      const slide = intermediateSlides[slideIndex];
-
-      if (!slide) {
-        return [pageNumber, "", "", "", "", "", "", "", "", "", ""];
-      }
-
-      if (slide.type === "type1") {
-        return [
-          pageNumber,
-          "Type 1",
-          slide.texte1 || "",
-          "",
-          "",
-          "",
-          "",
-          slide.promptImage1 || "",
-          "",
-          "",
-          "",
-        ];
-      } else if (slide.type === "type2") {
-        return [
-          pageNumber,
-          "Type 2",
-          slide.texte1 || "",
-          "",
-          "",
-          "",
-          "",
-          slide.promptImage1 || "",
-          "",
-          "",
-          "",
-        ];
-      } else if (slide.type === "type3") {
-        return [
-          pageNumber,
-          "Type 3",
-          slide.texte1 || "",
-          "",
-          "",
-          "",
-          "",
-          slide.promptImage1 || "",
-          "",
-          "",
-          "",
-        ];
-      } else if (slide.type === "type4") {
-        return [
-          pageNumber,
-          "Type 4",
-          slide.texte1 || "",
-          "",
-          "",
-          "",
-          slide.auteur || "",
-          "",
-          "",
-          "",
-          "",
-        ];
-      } else if (slide.type === "type5") {
-        return [
-          pageNumber,
-          "Type 5",
-          slide.texte1 || "",
-          slide.texte2 || "",
-          slide.texte3 || "",
-          slide.texte4 || "",
-          "",
-          slide.promptImage1 || "",
-          slide.promptImage2 || "",
-          slide.promptImage3 || "",
-          slide.promptImage4 || "",
-        ];
-      }
-
-      return [pageNumber, "", "", "", "", "", "", "", "", "", ""];
-    });
+  
+  // Create only the slides we need: title + intermediate + finale
+  const fixedSlides: any[][] = [];
+  
+  // Add title slide
+  const titleSlide = slides.find((s: any) => s.type === "Titre");
+  fixedSlides.push([
+    1,
+    "Titre",
+    titleSlide?.thematique || "",
+    titleSlide?.titre || "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  ]);
+  
+  // Add intermediate slides
+  intermediateSlides.forEach((slide: any, index: number) => {
+    const pageNumber = index + 2;
+    
+    if (slide.type === "type1") {
+      fixedSlides.push([
+        pageNumber,
+        "Type 1",
+        slide.texte1 || "",
+        "",
+        "",
+        "",
+        "",
+        slide.promptImage1 || "",
+        "",
+        "",
+        "",
+      ]);
+    } else if (slide.type === "type2") {
+      fixedSlides.push([
+        pageNumber,
+        "Type 2",
+        slide.texte1 || "",
+        "",
+        "",
+        "",
+        "",
+        slide.promptImage1 || "",
+        "",
+        "",
+        "",
+      ]);
+    } else if (slide.type === "type3") {
+      fixedSlides.push([
+        pageNumber,
+        "Type 3",
+        slide.texte1 || "",
+        "",
+        "",
+        "",
+        "",
+        slide.promptImage1 || "",
+        "",
+        "",
+        "",
+      ]);
+    } else if (slide.type === "type4") {
+      fixedSlides.push([
+        pageNumber,
+        "Type 4",
+        slide.texte1 || "",
+        "",
+        "",
+        "",
+        slide.auteur || "",
+        "",
+        "",
+        "",
+        "",
+      ]);
+    } else if (slide.type === "type5") {
+      fixedSlides.push([
+        pageNumber,
+        "Type 5",
+        slide.texte1 || "",
+        slide.texte2 || "",
+        slide.texte3 || "",
+        slide.texte4 || "",
+        "",
+        slide.promptImage1 || "",
+        slide.promptImage2 || "",
+        slide.promptImage3 || "",
+        slide.promptImage4 || "",
+      ]);
+    }
+  });
+  
+  // Add finale slide
+  const finalSlide = slides.find((s: any) => s.type === "Finale");
+  const finalPageNumber = intermediateSlides.length + 2;
+  fixedSlides.push([
+    finalPageNumber,
+    "Finale",
+    finalSlide?.expert || "",
+    finalSlide?.expertise || "",
+    "",
+    "",
+    finalSlide?.url || "",
+    "",
+    "",
+    "",
+    "",
+  ]);
 
   fixedSlides.forEach((row) => data.push(row));
 
