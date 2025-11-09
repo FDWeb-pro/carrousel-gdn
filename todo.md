@@ -228,3 +228,8 @@
 - [x] Capitaliser la première lettre des types de slides dans l'export Excel
 - [x] Corriger l'erreur lors de l'envoi email sans enregistrement préalable
 - [x] Corriger le blocage d'utilisateurs qui ne fonctionne pas correctement
+
+
+## Bugs du champ Thématique
+- [x] Corriger la perte de focus lors de la saisie dans le champ Thématique
+- [x] Corriger le verrouillage du champ Thématique après ajout d'une slide

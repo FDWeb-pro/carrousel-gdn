@@ -20,78 +20,69 @@ export default function ThematiqueAutocomplete({
   className 
 }: ThematiqueAutocompleteProps) {
   const [open, setOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(value);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Debounce search term to avoid too many requests
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
+      setDebouncedSearchTerm(value);
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+  }, [value]);
 
   const { data: searchResults = [] } = trpc.thematiques.search.useQuery(
     { searchTerm: debouncedSearchTerm },
     { enabled: debouncedSearchTerm.length > 0 && open }
   );
 
-  useEffect(() => {
-    setSearchTerm(value);
-  }, [value]);
-
   const handleSelect = (selectedValue: string) => {
     onChange(selectedValue);
-    setSearchTerm(selectedValue);
     setOpen(false);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    setSearchTerm(newValue);
     onChange(newValue);
     if (newValue.length > 0) {
       setOpen(true);
+    } else {
+      setOpen(false);
     }
   };
 
   const handleInputFocus = () => {
-    if (searchTerm.length > 0) {
-      setOpen(true);
-    }
+    // Don't open automatically on focus, only when typing
+  };
+
+  const handleInputBlur = () => {
+    // Delay closing to allow click on suggestions
+    setTimeout(() => setOpen(false), 200);
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <div className="relative">
-          <Input
-            ref={inputRef}
-            value={searchTerm}
-            onChange={handleInputChange}
-            onFocus={handleInputFocus}
-            placeholder={placeholder}
-            className={className}
-          />
-        </div>
-      </PopoverTrigger>
-      <PopoverContent className="w-[400px] p-0" align="start">
-        <Command>
-          <CommandList>
-            {searchResults.length === 0 && searchTerm.length > 0 && (
-              <CommandEmpty>
-                Aucune thématique trouvée. Tapez pour créer "{searchTerm}"
-              </CommandEmpty>
-            )}
-            {searchResults.length > 0 && (
+    <div className="relative">
+      <Input
+        ref={inputRef}
+        value={value}
+        onChange={handleInputChange}
+        onFocus={handleInputFocus}
+        onBlur={handleInputBlur}
+        placeholder={placeholder}
+        className={className}
+      />
+      {open && searchResults.length > 0 && (
+        <div className="absolute z-50 w-full mt-1 bg-popover border rounded-md shadow-md">
+          <Command>
+            <CommandList>
               <CommandGroup heading="Thématiques existantes">
                 {searchResults.map((thematique) => (
                   <CommandItem
                     key={thematique.id}
                     value={thematique.name}
                     onSelect={() => handleSelect(thematique.name)}
+                    onMouseDown={(e) => e.preventDefault()} // Prevent blur
                   >
                     <Check
                       className={cn(
@@ -106,10 +97,10 @@ export default function ThematiqueAutocomplete({
                   </CommandItem>
                 ))}
               </CommandGroup>
-            )}
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+            </CommandList>
+          </Command>
+        </div>
+      )}
+    </div>
   );
 }
